@@ -1,0 +1,499 @@
+{
+    "total_tests": 8,
+    "passed_tests": 0,
+    "failed_tests": 8,
+    "pass_rate": 0.0,
+    "total_time_seconds": 150.96,
+    "results": [
+        {
+            "name": "VPN connection issue should route to Network Operations Team",
+            "passed": false,
+            "response_time_seconds": 36.89,
+            "checks": [
+                {
+                    "check": "required_fields",
+                    "passed": false,
+                    "missing_fields": [
+                        "first_response",
+                        "audit_trail"
+                    ]
+                },
+                {
+                    "check": "category",
+                    "passed": false,
+                    "expected": "Network Issue",
+                    "actual": "Access Issue"
+                },
+                {
+                    "check": "assigned_team",
+                    "passed": false,
+                    "expected": "Network Operations Team",
+                    "actual": "Security / IAM Team"
+                },
+                {
+                    "check": "web_search_used",
+                    "passed": false,
+                    "expected": false,
+                    "actual": true
+                },
+                {
+                    "check": "suggested_solution",
+                    "passed": true,
+                    "actual_count": 3
+                },
+                {
+                    "check": "audit_trail",
+                    "passed": false,
+                    "actual_count": 0
+                }
+            ],
+            "actual_response": {
+                "ticket_id": "TICKET-BDDE654D",
+                "category": "Access Issue",
+                "confidence": 0.7,
+                "priority": "Medium",
+                "assigned_team": "Security / IAM Team",
+                "rag_used": false,
+                "rag_score": 0.0,
+                "rag_sources": [],
+                "web_search_used": true,
+                "suggested_solution": [
+                    "RAG was weak and web search fallback failed.",
+                    "Please review this ticket manually.",
+                    "Technical detail: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite\\nPlease retry in 28.042103266s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.5-flash-lite'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '28s'}]}}"
+                ]
+            }
+        },
+        {
+            "name": "Account locked issue should route to Security IAM Team",
+            "passed": false,
+            "response_time_seconds": 36.59,
+            "checks": [
+                {
+                    "check": "required_fields",
+                    "passed": false,
+                    "missing_fields": [
+                        "first_response",
+                        "audit_trail"
+                    ]
+                },
+                {
+                    "check": "category",
+                    "passed": true,
+                    "expected": "Access Issue",
+                    "actual": "Access Issue"
+                },
+                {
+                    "check": "assigned_team",
+                    "passed": true,
+                    "expected": "Security / IAM Team",
+                    "actual": "Security / IAM Team"
+                },
+                {
+                    "check": "web_search_used",
+                    "passed": false,
+                    "expected": false,
+                    "actual": true
+                },
+                {
+                    "check": "suggested_solution",
+                    "passed": true,
+                    "actual_count": 3
+                },
+                {
+                    "check": "audit_trail",
+                    "passed": false,
+                    "actual_count": 0
+                }
+            ],
+            "actual_response": {
+                "ticket_id": "TICKET-3F7304A3",
+                "category": "Access Issue",
+                "confidence": 0.7,
+                "priority": "Medium",
+                "assigned_team": "Security / IAM Team",
+                "rag_used": false,
+                "rag_score": 0.0,
+                "rag_sources": [],
+                "web_search_used": true,
+                "suggested_solution": [
+                    "RAG was weak and web search fallback failed.",
+                    "Please review this ticket manually.",
+                    "Technical detail: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite\\nPlease retry in 51.440927553s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.5-flash-lite'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '51s'}]}}"
+                ]
+            }
+        },
+        {
+            "name": "Outlook email issue should route to Messaging Email Support Team",
+            "passed": false,
+            "response_time_seconds": 37.24,
+            "checks": [
+                {
+                    "check": "required_fields",
+                    "passed": false,
+                    "missing_fields": [
+                        "first_response",
+                        "audit_trail"
+                    ]
+                },
+                {
+                    "check": "category",
+                    "passed": true,
+                    "expected": "Email Issue",
+                    "actual": "Email Issue"
+                },
+                {
+                    "check": "assigned_team",
+                    "passed": true,
+                    "expected": "Messaging / Email Support Team",
+                    "actual": "Messaging / Email Support Team"
+                },
+                {
+                    "check": "web_search_used",
+                    "passed": false,
+                    "expected": false,
+                    "actual": true
+                },
+                {
+                    "check": "suggested_solution",
+                    "passed": true,
+                    "actual_count": 3
+                },
+                {
+                    "check": "audit_trail",
+                    "passed": false,
+                    "actual_count": 0
+                }
+            ],
+            "actual_response": {
+                "ticket_id": "TICKET-C1E4A50F",
+                "category": "Email Issue",
+                "confidence": 0.7,
+                "priority": "Low",
+                "assigned_team": "Messaging / Email Support Team",
+                "rag_used": false,
+                "rag_score": 0.0,
+                "rag_sources": [],
+                "web_search_used": true,
+                "suggested_solution": [
+                    "RAG was weak and web search fallback failed.",
+                    "Please review this ticket manually.",
+                    "Technical detail: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite\\nPlease retry in 14.209904407s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-2.5-flash-lite', 'location': 'global'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '14s'}]}}"
+                ]
+            }
+        },
+        {
+            "name": "Monitor issue should route to Desktop Support Team",
+            "passed": false,
+            "response_time_seconds": 0.59,
+            "checks": [
+                {
+                    "check": "required_fields",
+                    "passed": false,
+                    "missing_fields": [
+                        "first_response",
+                        "audit_trail"
+                    ]
+                },
+                {
+                    "check": "category",
+                    "passed": true,
+                    "expected": "Hardware Issue",
+                    "actual": "Hardware Issue"
+                },
+                {
+                    "check": "assigned_team",
+                    "passed": true,
+                    "expected": "Desktop Support Team",
+                    "actual": "Desktop Support Team"
+                },
+                {
+                    "check": "web_search_used",
+                    "passed": true,
+                    "expected": true,
+                    "actual": true
+                },
+                {
+                    "check": "suggested_solution",
+                    "passed": true,
+                    "actual_count": 3
+                },
+                {
+                    "check": "audit_trail",
+                    "passed": false,
+                    "actual_count": 0
+                }
+            ],
+            "actual_response": {
+                "ticket_id": "TICKET-AAC5ADFE",
+                "category": "Hardware Issue",
+                "confidence": 0.7,
+                "priority": "Medium",
+                "assigned_team": "Desktop Support Team",
+                "rag_used": false,
+                "rag_score": 0.3776,
+                "rag_sources": [
+                    "vpn_issue.txt",
+                    "email_issue.txt",
+                    "system_slow.txt"
+                ],
+                "web_search_used": true,
+                "suggested_solution": [
+                    "RAG was weak and web search fallback failed.",
+                    "Please review this ticket manually.",
+                    "Technical detail: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite\\nPlease retry in 13.617364922s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.5-flash-lite'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '13s'}]}}"
+                ]
+            }
+        },
+        {
+            "name": "Keyboard issue should route to Desktop Support Team",
+            "passed": false,
+            "response_time_seconds": 0.56,
+            "checks": [
+                {
+                    "check": "required_fields",
+                    "passed": false,
+                    "missing_fields": [
+                        "first_response",
+                        "audit_trail"
+                    ]
+                },
+                {
+                    "check": "category",
+                    "passed": true,
+                    "expected": "Hardware Issue",
+                    "actual": "Hardware Issue"
+                },
+                {
+                    "check": "assigned_team",
+                    "passed": true,
+                    "expected": "Desktop Support Team",
+                    "actual": "Desktop Support Team"
+                },
+                {
+                    "check": "web_search_used",
+                    "passed": true,
+                    "expected": true,
+                    "actual": true
+                },
+                {
+                    "check": "suggested_solution",
+                    "passed": true,
+                    "actual_count": 3
+                },
+                {
+                    "check": "audit_trail",
+                    "passed": false,
+                    "actual_count": 0
+                }
+            ],
+            "actual_response": {
+                "ticket_id": "TICKET-CA8BAA1F",
+                "category": "Hardware Issue",
+                "confidence": 0.7,
+                "priority": "Medium",
+                "assigned_team": "Desktop Support Team",
+                "rag_used": false,
+                "rag_score": 0.4288,
+                "rag_sources": [
+                    "email_issue.txt",
+                    "system_slow.txt"
+                ],
+                "web_search_used": true,
+                "suggested_solution": [
+                    "RAG was weak and web search fallback failed.",
+                    "Please review this ticket manually.",
+                    "Technical detail: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite\\nPlease retry in 13.052954708s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.5-flash-lite'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '13s'}]}}"
+                ]
+            }
+        },
+        {
+            "name": "API timeout should route to Backend or DevOps Team",
+            "passed": false,
+            "response_time_seconds": 37.95,
+            "checks": [
+                {
+                    "check": "required_fields",
+                    "passed": false,
+                    "missing_fields": [
+                        "first_response",
+                        "audit_trail"
+                    ]
+                },
+                {
+                    "check": "category",
+                    "passed": true,
+                    "expected": [
+                        "Bug",
+                        "Performance Issue"
+                    ],
+                    "actual": "Bug"
+                },
+                {
+                    "check": "assigned_team",
+                    "passed": true,
+                    "expected": [
+                        "Backend Team",
+                        "DevOps Team"
+                    ],
+                    "actual": "Backend Team"
+                },
+                {
+                    "check": "web_search_used",
+                    "passed": false,
+                    "expected": false,
+                    "actual": true
+                },
+                {
+                    "check": "suggested_solution",
+                    "passed": true,
+                    "actual_count": 3
+                },
+                {
+                    "check": "audit_trail",
+                    "passed": false,
+                    "actual_count": 0
+                }
+            ],
+            "actual_response": {
+                "ticket_id": "TICKET-F4D709A4",
+                "category": "Bug",
+                "confidence": 0.7,
+                "priority": "Low",
+                "assigned_team": "Backend Team",
+                "rag_used": false,
+                "rag_score": 0.0,
+                "rag_sources": [],
+                "web_search_used": true,
+                "suggested_solution": [
+                    "RAG was weak and web search fallback failed.",
+                    "Please review this ticket manually.",
+                    "Technical detail: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite\\nPlease retry in 35.106814327s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.5-flash-lite'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '35s'}]}}"
+                ]
+            }
+        },
+        {
+            "name": "Docker issue should trigger web search fallback",
+            "passed": false,
+            "response_time_seconds": 0.57,
+            "checks": [
+                {
+                    "check": "required_fields",
+                    "passed": false,
+                    "missing_fields": [
+                        "first_response",
+                        "audit_trail"
+                    ]
+                },
+                {
+                    "check": "category",
+                    "passed": true,
+                    "expected": "General Support",
+                    "actual": "General Support"
+                },
+                {
+                    "check": "assigned_team",
+                    "passed": true,
+                    "expected": "General Support Team",
+                    "actual": "General Support Team"
+                },
+                {
+                    "check": "web_search_used",
+                    "passed": true,
+                    "expected": true,
+                    "actual": true
+                },
+                {
+                    "check": "suggested_solution",
+                    "passed": true,
+                    "actual_count": 3
+                },
+                {
+                    "check": "audit_trail",
+                    "passed": false,
+                    "actual_count": 0
+                }
+            ],
+            "actual_response": {
+                "ticket_id": "TICKET-9075CB49",
+                "category": "General Support",
+                "confidence": 0.7,
+                "priority": "Low",
+                "assigned_team": "General Support Team",
+                "rag_used": false,
+                "rag_score": 0.4089,
+                "rag_sources": [
+                    "api_timeout.txt"
+                ],
+                "web_search_used": true,
+                "suggested_solution": [
+                    "RAG was weak and web search fallback failed.",
+                    "Please review this ticket manually.",
+                    "Technical detail: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite\\nPlease retry in 34.527734239s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.5-flash-lite'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '34s'}]}}"
+                ]
+            }
+        },
+        {
+            "name": "GitHub Actions issue should trigger web search fallback",
+            "passed": false,
+            "response_time_seconds": 0.56,
+            "checks": [
+                {
+                    "check": "required_fields",
+                    "passed": false,
+                    "missing_fields": [
+                        "first_response",
+                        "audit_trail"
+                    ]
+                },
+                {
+                    "check": "category",
+                    "passed": false,
+                    "expected": "General Support",
+                    "actual": "Bug"
+                },
+                {
+                    "check": "assigned_team",
+                    "passed": false,
+                    "expected": "General Support Team",
+                    "actual": "Frontend Team"
+                },
+                {
+                    "check": "web_search_used",
+                    "passed": true,
+                    "expected": true,
+                    "actual": true
+                },
+                {
+                    "check": "suggested_solution",
+                    "passed": true,
+                    "actual_count": 3
+                },
+                {
+                    "check": "audit_trail",
+                    "passed": false,
+                    "actual_count": 0
+                }
+            ],
+            "actual_response": {
+                "ticket_id": "TICKET-D3FD1CF1",
+                "category": "Bug",
+                "confidence": 0.7,
+                "priority": "Medium",
+                "assigned_team": "Frontend Team",
+                "rag_used": false,
+                "rag_score": 0.4086,
+                "rag_sources": [
+                    "api_timeout.txt",
+                    "software_installation.txt"
+                ],
+                "web_search_used": true,
+                "suggested_solution": [
+                    "RAG was weak and web search fallback failed.",
+                    "Please review this ticket manually.",
+                    "Technical detail: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite\\nPlease retry in 33.964660168s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-2.5-flash-lite', 'location': 'global'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '33s'}]}}"
+                ]
+            }
+        }
+    ]
+}

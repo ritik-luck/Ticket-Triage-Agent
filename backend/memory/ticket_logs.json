@@ -1,0 +1,161 @@
+[
+    {
+        "ticket_id": "TICKET-64BD3153",
+        "category": "Production Outage",
+        "confidence": 0.63,
+        "priority": "Critical",
+        "assigned_team": "Incident Response Team",
+        "rag_score": 0.6294,
+        "rag_used": true,
+        "web_search_used": false,
+        "suggested_solution": [
+            "Based on the provided internal knowledge base, I've generated the following:",
+            "Issue Summary:**",
+            "The production system is down, and multiple users are unable to access the application. The issue is likely related to recent updates or integration issues, and attempts to restart services and run diagnostics have been unsuccessful.",
+            "Troubleshooting Steps:**",
+            "1. Check the email for further details on the issue.",
+            "2. Investigate recent updates and integration issues that may be causing the system outage."
+        ],
+        "rag_sources": [
+            "aa_dataset-tickets-multi-lang-5-2-50-version.csv",
+            "dataset-tickets-multi-lang-4-20k.csv"
+        ],
+        "audit_trail": [
+            "Ticket created with ID: TICKET-64BD3153",
+            "Ticket text prepared successfully.",
+            "RAG augmentation executed successfully.",
+            "RAG used: True",
+            "RAG score: 0.6294",
+            "Ticket category detected as: Production Outage",
+            "Ticket priority detected as: Critical",
+            "Ticket routed to: Incident Response Team",
+            "Guardrail applied: Production outage detected. Priority changed to Critical and ticket routed to Incident Response Team.",
+            "Escalated for human review because guardrail detected a high-risk issue.",
+            "Final category after guardrails: Production Outage",
+            "Final priority after guardrails: Critical",
+            "Final assigned team after guardrails: Incident Response Team",
+            "Final confidence calculated as: 0.63",
+            "Final triage response generated successfully."
+        ],
+        "guardrail_applied": true
+    },
+    {
+        "ticket_id": "TICKET-0F43A9E7",
+        "category": "General Support",
+        "confidence": 0.7,
+        "priority": "Low",
+        "assigned_team": "General Support Team",
+        "rag_score": 0.4687,
+        "rag_used": false,
+        "web_search_used": true,
+        "suggested_solution": [
+            "Issue Understanding: The user is inquiring about the current cafeteria lunch menu and any special food counters that may be available.",
+            "Likely Cause: The user may not have access to the cafeteria's menu or schedule, or there may not be a digital platform to display this information.",
+            "Steps:",
+            "1. Check the company's intranet or internal website for cafeteria menu information.",
+            "2. Look for digital signage or displays in the cafeteria area that may show the daily menu.",
+            "3. Contact the cafeteria staff or management directly to inquire about the menu and any special food counters."
+        ],
+        "rag_sources": [
+            "dataset-tickets-german_normalized_50_5_2.csv",
+            "dataset-tickets-german_normalized.csv"
+        ],
+        "audit_trail": [
+            "Ticket created with ID: TICKET-0F43A9E7",
+            "Ticket text prepared successfully.",
+            "RAG augmentation executed successfully.",
+            "RAG used: False",
+            "RAG score: 0.4687",
+            "No strong internal KB match. Using web fallback.",
+            "Web fallback executed successfully.",
+            "Ticket category detected as: General Support",
+            "Ticket priority detected as: Low",
+            "Ticket routed to: General Support Team",
+            "No guardrail triggered. Normal classification, priority, and routing retained.",
+            "Final category after guardrails: General Support",
+            "Final priority after guardrails: Low",
+            "Final assigned team after guardrails: General Support Team",
+            "Final confidence calculated as: 0.7",
+            "Final triage response generated successfully."
+        ],
+        "guardrail_applied": false
+    },
+    {
+        "ticket_id": "TICKET-519AF192",
+        "category": "Security Incident",
+        "confidence": 0.69,
+        "priority": "Critical",
+        "assigned_team": "Security / IAM Team",
+        "rag_score": 0.6895,
+        "rag_used": true,
+        "web_search_used": false,
+        "suggested_solution": [
+            "Based on the internal knowledge base, I've generated the following response:",
+            "Issue Summary:**",
+            "The user has received a suspicious login alert for their account, indicating a potential security breach. The user did not attempt to log in at the time of the alert and is concerned that their account may be compromised.",
+            "Troubleshooting Steps:**",
+            "1. Request the user to share details regarding the suspicious access or unauthorized login attempt.",
+            "2. Arrange a call with the user to discuss the next steps to ensure the security of the systems."
+        ],
+        "rag_sources": [
+            "aa_dataset-tickets-multi-lang-5-2-50-version.csv"
+        ],
+        "audit_trail": [
+            "Ticket created with ID: TICKET-519AF192",
+            "Ticket text prepared successfully.",
+            "RAG augmentation executed successfully.",
+            "RAG used: True",
+            "RAG score: 0.6895",
+            "Ticket category detected as: Security Incident",
+            "Ticket priority detected as: High",
+            "Ticket routed to: Security / IAM Team",
+            "Guardrail applied: Security incident detected. Priority changed to Critical and ticket routed to Security / IAM Team.",
+            "Escalated for human review because guardrail detected a high-risk issue.",
+            "Final category after guardrails: Security Incident",
+            "Final priority after guardrails: Critical",
+            "Final assigned team after guardrails: Security / IAM Team",
+            "Final confidence calculated as: 0.69",
+            "Final triage response generated successfully."
+        ],
+        "guardrail_applied": true
+    },
+    {
+        "ticket_id": "TICKET-72F820C6",
+        "category": "Security Incident",
+        "confidence": 0.61,
+        "priority": "Critical",
+        "assigned_team": "Security / IAM Team",
+        "rag_score": 0.6142,
+        "rag_used": true,
+        "web_search_used": false,
+        "suggested_solution": [
+            "Based on the provided internal knowledge base, I'll generate the required information:",
+            "Issue Summary:**",
+            "The user's account has been compromised, and they are seeking assistance. However, the description provided is incomplete, and more information is needed to support the user accordingly.",
+            "Troubleshooting Steps:**",
+            "1. Request the user to provide more details about the incident, such as the type of data that was compromised and any other relevant information.",
+            "2. Verify the user's account information by asking them to confirm their account number to ensure it is correct."
+        ],
+        "rag_sources": [
+            "aa_dataset-tickets-multi-lang-5-2-50-version.csv"
+        ],
+        "audit_trail": [
+            "Ticket created with ID: TICKET-72F820C6",
+            "Ticket text prepared successfully.",
+            "RAG augmentation executed successfully.",
+            "RAG used: True",
+            "RAG score: 0.6142",
+            "Ticket category detected as: Security Incident",
+            "Ticket priority detected as: Low",
+            "Ticket routed to: Security / IAM Team",
+            "Guardrail applied: Security incident detected. Priority changed to Critical and ticket routed to Security / IAM Team.",
+            "Escalated for human review because guardrail detected a high-risk issue.",
+            "Final category after guardrails: Security Incident",
+            "Final priority after guardrails: Critical",
+            "Final assigned team after guardrails: Security / IAM Team",
+            "Final confidence calculated as: 0.61",
+            "Final triage response generated successfully."
+        ],
+        "guardrail_applied": true
+    }
+]
