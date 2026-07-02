@@ -29,6 +29,8 @@ class AnalyticsManager:
 
         guardrail_summary = self._build_guardrail_summary(tickets)
 
+        sla_summary = self._build_sla_summary(tickets)
+
         recent_tickets = self._get_recent_tickets(
             tickets=tickets,
             limit=5
@@ -43,6 +45,7 @@ class AnalyticsManager:
             "team_distribution": team_distribution,
             "rag_web_summary": rag_web_summary,
             "guardrail_summary": guardrail_summary,
+            "sla_summary": sla_summary,
             "recent_tickets": recent_tickets,
             "repeated_issues": repeated_issues
         }
@@ -139,6 +142,82 @@ class AnalyticsManager:
             "production_outage": production_outage_count,
             "security_incident": security_incident_count,
             "data_loss": data_loss_count
+        }
+
+    def get_latest_guardrail_reason(
+        self,
+        tickets: List[Dict[str, Any]]
+    ) -> str:
+        for ticket in reversed(tickets):
+            if ticket.get("guardrail_applied") is not True and ticket.get("guardrailApplied") is not True:
+                continue
+
+            reason = (
+                ticket.get("guardrail_reason")
+                or ticket.get("guardrailReason")
+                or self._get_guardrail_reason(ticket)
+            )
+
+            if reason:
+                return str(reason)
+
+        return "Guardrail triggered, but no description was recorded."
+
+    def _get_guardrail_reason(
+        self,
+        ticket: Dict[str, Any]
+    ) -> str:
+        audit_trail = (
+            ticket.get("audit_trail")
+            or ticket.get("auditTrail")
+            or ticket.get("audit")
+            or []
+        )
+
+        if isinstance(audit_trail, list):
+            for item in audit_trail:
+                text = str(item).strip()
+                if "guardrail" in text.lower():
+                    return text
+
+        if audit_trail:
+            return str(audit_trail)
+
+        return ""
+
+    def _build_sla_summary(
+        self,
+        tickets: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
+        total_with_sla = 0
+        high_risk_count = 0
+        medium_risk_count = 0
+        low_risk_count = 0
+
+        for ticket in tickets:
+            if ticket.get("sla_target_hours") is None and ticket.get("slaTargetHours") is None:
+                continue
+
+            total_with_sla += 1
+
+            risk = str(
+                ticket.get("sla_breach_risk")
+                or ticket.get("slaBreachRisk")
+                or ""
+            ).lower()
+
+            if risk == "high":
+                high_risk_count += 1
+            elif risk == "medium":
+                medium_risk_count += 1
+            elif risk == "low":
+                low_risk_count += 1
+
+        return {
+            "tickets_with_sla": total_with_sla,
+            "high_risk": high_risk_count,
+            "medium_risk": medium_risk_count,
+            "low_risk": low_risk_count,
         }
 
     def _get_audit_text(

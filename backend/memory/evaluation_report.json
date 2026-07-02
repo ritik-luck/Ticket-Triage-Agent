@@ -1,45 +1,50 @@
 {
-    "total_tests": 8,
+    "total_tests": 14,
     "passed_tests": 0,
-    "failed_tests": 8,
+    "failed_tests": 14,
     "pass_rate": 0.0,
-    "total_time_seconds": 150.96,
+    "total_time_seconds": 160.41,
     "results": [
         {
             "name": "VPN connection issue should route to Network Operations Team",
             "passed": false,
-            "response_time_seconds": 36.89,
+            "response_time_seconds": 4.56,
             "checks": [
                 {
                     "check": "required_fields",
                     "passed": false,
                     "missing_fields": [
-                        "first_response",
+                        "confidence",
+                        "rag_used",
+                        "rag_score",
+                        "rag_sources",
+                        "web_search_used",
+                        "recommended_action",
                         "audit_trail"
                     ]
                 },
                 {
                     "check": "category",
-                    "passed": false,
+                    "passed": true,
                     "expected": "Network Issue",
-                    "actual": "Access Issue"
+                    "actual": "Network Issue"
                 },
                 {
                     "check": "assigned_team",
-                    "passed": false,
+                    "passed": true,
                     "expected": "Network Operations Team",
-                    "actual": "Security / IAM Team"
+                    "actual": "Network Operations Team"
                 },
                 {
                     "check": "web_search_used",
                     "passed": false,
                     "expected": false,
-                    "actual": true
+                    "actual": null
                 },
                 {
                     "check": "suggested_solution",
                     "passed": true,
-                    "actual_count": 3
+                    "actual_count": 6
                 },
                 {
                     "check": "audit_trail",
@@ -48,32 +53,35 @@
                 }
             ],
             "actual_response": {
-                "ticket_id": "TICKET-BDDE654D",
-                "category": "Access Issue",
-                "confidence": 0.7,
+                "ticket_id": "TICKET-612C5F40",
+                "category": "Network Issue",
                 "priority": "Medium",
-                "assigned_team": "Security / IAM Team",
-                "rag_used": false,
-                "rag_score": 0.0,
-                "rag_sources": [],
-                "web_search_used": true,
+                "assigned_team": "Network Operations Team",
                 "suggested_solution": [
-                    "RAG was weak and web search fallback failed.",
-                    "Please review this ticket manually.",
-                    "Technical detail: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite\\nPlease retry in 28.042103266s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.5-flash-lite'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '28s'}]}}"
+                    "Based on the internal knowledge base, here's the response:",
+                    "Issue Summary:**",
+                    "The user is experiencing issues with connecting to the VPN, receiving an \"authentication failed\" error despite entering the correct password. This issue is similar to previously reported problems with VPN connectivity, which were potentially caused by recent software updates, changes in network configuration, or network overload.",
+                    "Troubleshooting Steps:**",
+                    "1. Reboot the VPN router to ensure it's not a temporary issue.",
+                    "2. Check the network configuration and internet speed to identify any potential problems."
                 ]
             }
         },
         {
             "name": "Account locked issue should route to Security IAM Team",
             "passed": false,
-            "response_time_seconds": 36.59,
+            "response_time_seconds": 1.87,
             "checks": [
                 {
                     "check": "required_fields",
                     "passed": false,
                     "missing_fields": [
-                        "first_response",
+                        "confidence",
+                        "rag_used",
+                        "rag_score",
+                        "rag_sources",
+                        "web_search_used",
+                        "recommended_action",
                         "audit_trail"
                     ]
                 },
@@ -93,12 +101,12 @@
                     "check": "web_search_used",
                     "passed": false,
                     "expected": false,
-                    "actual": true
+                    "actual": null
                 },
                 {
                     "check": "suggested_solution",
                     "passed": true,
-                    "actual_count": 3
+                    "actual_count": 6
                 },
                 {
                     "check": "audit_trail",
@@ -107,32 +115,35 @@
                 }
             ],
             "actual_response": {
-                "ticket_id": "TICKET-3F7304A3",
+                "ticket_id": "TICKET-5F6FD18A",
                 "category": "Access Issue",
-                "confidence": 0.7,
-                "priority": "Medium",
+                "priority": "High",
                 "assigned_team": "Security / IAM Team",
-                "rag_used": false,
-                "rag_score": 0.0,
-                "rag_sources": [],
-                "web_search_used": true,
                 "suggested_solution": [
-                    "RAG was weak and web search fallback failed.",
-                    "Please review this ticket manually.",
-                    "Technical detail: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite\\nPlease retry in 51.440927553s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.5-flash-lite'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '51s'}]}}"
+                    "Based on the internal knowledge base, I've generated the following:",
+                    "Issue Summary:**",
+                    "The user's account is locked due to multiple failed login attempts, preventing access to email and VPN. The exact error message is not provided, but the issue may be related to outdated software or other technical problems.",
+                    "Troubleshooting Steps:**",
+                    "1. Request the user to provide more specific details and exact error messages to help resolve the issue more effectively.",
+                    "2. Advise the user to avoid repeated login attempts to prevent further locking of the account."
                 ]
             }
         },
         {
             "name": "Outlook email issue should route to Messaging Email Support Team",
             "passed": false,
-            "response_time_seconds": 37.24,
+            "response_time_seconds": 1.87,
             "checks": [
                 {
                     "check": "required_fields",
                     "passed": false,
                     "missing_fields": [
-                        "first_response",
+                        "confidence",
+                        "rag_used",
+                        "rag_score",
+                        "rag_sources",
+                        "web_search_used",
+                        "recommended_action",
                         "audit_trail"
                     ]
                 },
@@ -152,12 +163,12 @@
                     "check": "web_search_used",
                     "passed": false,
                     "expected": false,
-                    "actual": true
+                    "actual": null
                 },
                 {
                     "check": "suggested_solution",
                     "passed": true,
-                    "actual_count": 3
+                    "actual_count": 6
                 },
                 {
                     "check": "audit_trail",
@@ -166,32 +177,35 @@
                 }
             ],
             "actual_response": {
-                "ticket_id": "TICKET-C1E4A50F",
+                "ticket_id": "TICKET-2D74B87C",
                 "category": "Email Issue",
-                "confidence": 0.7,
-                "priority": "Low",
+                "priority": "Medium",
                 "assigned_team": "Messaging / Email Support Team",
-                "rag_used": false,
-                "rag_score": 0.0,
-                "rag_sources": [],
-                "web_search_used": true,
                 "suggested_solution": [
-                    "RAG was weak and web search fallback failed.",
-                    "Please review this ticket manually.",
-                    "Technical detail: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite\\nPlease retry in 14.209904407s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-2.5-flash-lite', 'location': 'global'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '14s'}]}}"
+                    "Based on the provided internal knowledge base, I've generated the following response:",
+                    "Issue Summary:**",
+                    "The user is experiencing issues with Outlook not sending emails, which are getting stuck in the outbox, and Outlook is not syncing. This problem is similar to previously reported synchronization difficulties with Outlook, where emails do not sync correctly between devices.",
+                    "Troubleshooting Steps:**",
+                    "1. Check the server status to ensure there are no ongoing issues.",
+                    "2. Restart Outlook to see if it resolves the issue."
                 ]
             }
         },
         {
             "name": "Monitor issue should route to Desktop Support Team",
             "passed": false,
-            "response_time_seconds": 0.59,
+            "response_time_seconds": 7.21,
             "checks": [
                 {
                     "check": "required_fields",
                     "passed": false,
                     "missing_fields": [
-                        "first_response",
+                        "confidence",
+                        "rag_used",
+                        "rag_score",
+                        "rag_sources",
+                        "web_search_used",
+                        "recommended_action",
                         "audit_trail"
                     ]
                 },
@@ -209,14 +223,14 @@
                 },
                 {
                     "check": "web_search_used",
-                    "passed": true,
+                    "passed": false,
                     "expected": true,
-                    "actual": true
+                    "actual": null
                 },
                 {
                     "check": "suggested_solution",
                     "passed": true,
-                    "actual_count": 3
+                    "actual_count": 6
                 },
                 {
                     "check": "audit_trail",
@@ -225,36 +239,35 @@
                 }
             ],
             "actual_response": {
-                "ticket_id": "TICKET-AAC5ADFE",
+                "ticket_id": "TICKET-5BAC25F3",
                 "category": "Hardware Issue",
-                "confidence": 0.7,
                 "priority": "Medium",
                 "assigned_team": "Desktop Support Team",
-                "rag_used": false,
-                "rag_score": 0.3776,
-                "rag_sources": [
-                    "vpn_issue.txt",
-                    "email_issue.txt",
-                    "system_slow.txt"
-                ],
-                "web_search_used": true,
                 "suggested_solution": [
-                    "RAG was weak and web search fallback failed.",
-                    "Please review this ticket manually.",
-                    "Technical detail: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite\\nPlease retry in 13.617364922s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.5-flash-lite'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '13s'}]}}"
+                    "Based on the internal knowledge base, I've generated the following response:",
+                    "Issue Summary:**",
+                    "The user's external monitor is not turning on after connecting the HDMI cable, despite attempting to troubleshoot the issue.",
+                    "Troubleshooting Steps:**",
+                    "1. Verify that the HDMI cable is properly connected to both the monitor and the computer.",
+                    "2. Try using a different HDMI cable to rule out any issues with the current cable."
                 ]
             }
         },
         {
             "name": "Keyboard issue should route to Desktop Support Team",
             "passed": false,
-            "response_time_seconds": 0.56,
+            "response_time_seconds": 15.87,
             "checks": [
                 {
                     "check": "required_fields",
                     "passed": false,
                     "missing_fields": [
-                        "first_response",
+                        "confidence",
+                        "rag_used",
+                        "rag_score",
+                        "rag_sources",
+                        "web_search_used",
+                        "recommended_action",
                         "audit_trail"
                     ]
                 },
@@ -272,14 +285,14 @@
                 },
                 {
                     "check": "web_search_used",
-                    "passed": true,
+                    "passed": false,
                     "expected": true,
-                    "actual": true
+                    "actual": null
                 },
                 {
                     "check": "suggested_solution",
                     "passed": true,
-                    "actual_count": 3
+                    "actual_count": 6
                 },
                 {
                     "check": "audit_trail",
@@ -288,35 +301,585 @@
                 }
             ],
             "actual_response": {
-                "ticket_id": "TICKET-CA8BAA1F",
+                "ticket_id": "TICKET-97BA0C47",
                 "category": "Hardware Issue",
-                "confidence": 0.7,
                 "priority": "Medium",
                 "assigned_team": "Desktop Support Team",
-                "rag_used": false,
-                "rag_score": 0.4288,
-                "rag_sources": [
-                    "email_issue.txt",
-                    "system_slow.txt"
-                ],
-                "web_search_used": true,
                 "suggested_solution": [
-                    "RAG was weak and web search fallback failed.",
-                    "Please review this ticket manually.",
-                    "Technical detail: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite\\nPlease retry in 13.052954708s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.5-flash-lite'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '13s'}]}}"
+                    "Based on the internal knowledge base, I've generated the following:",
+                    "Issue Summary:**",
+                    "The user is experiencing issues with their keyboard, where some keys are not working properly, making it difficult to operate.",
+                    "Troubleshooting Steps:**",
+                    "1. Restart the laptop.",
+                    "2. Update the keyboard drivers."
                 ]
             }
         },
         {
             "name": "API timeout should route to Backend or DevOps Team",
             "passed": false,
-            "response_time_seconds": 37.95,
+            "response_time_seconds": 17.43,
             "checks": [
                 {
                     "check": "required_fields",
                     "passed": false,
                     "missing_fields": [
-                        "first_response",
+                        "confidence",
+                        "rag_used",
+                        "rag_score",
+                        "rag_sources",
+                        "web_search_used",
+                        "recommended_action",
+                        "audit_trail"
+                    ]
+                },
+                {
+                    "check": "category",
+                    "passed": false,
+                    "expected": [
+                        "Bug",
+                        "Performance Issue"
+                    ],
+                    "actual": "Production Outage"
+                },
+                {
+                    "check": "assigned_team",
+                    "passed": false,
+                    "expected": [
+                        "Backend Team",
+                        "DevOps Team"
+                    ],
+                    "actual": "Incident Response Team"
+                },
+                {
+                    "check": "web_search_used",
+                    "passed": false,
+                    "expected": false,
+                    "actual": null
+                },
+                {
+                    "check": "suggested_solution",
+                    "passed": true,
+                    "actual_count": 6
+                },
+                {
+                    "check": "audit_trail",
+                    "passed": false,
+                    "actual_count": 0
+                }
+            ],
+            "actual_response": {
+                "ticket_id": "TICKET-852BA162",
+                "category": "Production Outage",
+                "priority": "High",
+                "assigned_team": "Incident Response Team",
+                "suggested_solution": [
+                    "Based on the provided internal knowledge base, I've generated the following response:",
+                    "Issue Summary:**",
+                    "The API is experiencing timeouts after the latest deployment, resulting in users being unable to complete requests. The team has already attempted troubleshooting by resetting integrations, updating connectors, and verifying API credentials, but the issue persists.",
+                    "Troubleshooting Steps:**",
+                    "To investigate the issue further, please provide the following information:",
+                    "1. Recent API updates: Details about any recent changes or updates made to the API."
+                ]
+            }
+        },
+        {
+            "name": "Docker issue should trigger web search fallback",
+            "passed": false,
+            "response_time_seconds": 16.49,
+            "checks": [
+                {
+                    "check": "required_fields",
+                    "passed": false,
+                    "missing_fields": [
+                        "confidence",
+                        "rag_used",
+                        "rag_score",
+                        "rag_sources",
+                        "web_search_used",
+                        "recommended_action",
+                        "audit_trail"
+                    ]
+                },
+                {
+                    "check": "category",
+                    "passed": false,
+                    "expected": "General Support",
+                    "actual": "Production Outage"
+                },
+                {
+                    "check": "assigned_team",
+                    "passed": false,
+                    "expected": "General Support Team",
+                    "actual": "Incident Response Team"
+                },
+                {
+                    "check": "web_search_used",
+                    "passed": false,
+                    "expected": true,
+                    "actual": null
+                },
+                {
+                    "check": "suggested_solution",
+                    "passed": true,
+                    "actual_count": 6
+                },
+                {
+                    "check": "audit_trail",
+                    "passed": false,
+                    "actual_count": 0
+                }
+            ],
+            "actual_response": {
+                "ticket_id": "TICKET-F4FCA17F",
+                "category": "Production Outage",
+                "priority": "Critical",
+                "assigned_team": "Incident Response Team",
+                "suggested_solution": [
+                    "Based on the provided internal knowledge base, here's the generated output:",
+                    "Issue Summary:**",
+                    "The user's Docker container exits immediately after running `docker compose up` with an exit code 1. The user has provided limited information, and further investigation is required to resolve the issue.",
+                    "Troubleshooting Steps:**",
+                    "1. Request the user to provide exact error messages from the Docker container logs for further investigation.",
+                    "2. Ask the user to provide more details about any recent Docker updates applied and the specific error messages they are observing."
+                ]
+            }
+        },
+        {
+            "name": "GitHub Actions issue should trigger web search fallback",
+            "passed": false,
+            "response_time_seconds": 15.83,
+            "checks": [
+                {
+                    "check": "required_fields",
+                    "passed": false,
+                    "missing_fields": [
+                        "confidence",
+                        "rag_used",
+                        "rag_score",
+                        "rag_sources",
+                        "web_search_used",
+                        "recommended_action",
+                        "audit_trail"
+                    ]
+                },
+                {
+                    "check": "category",
+                    "passed": false,
+                    "expected": "General Support",
+                    "actual": "Production Outage"
+                },
+                {
+                    "check": "assigned_team",
+                    "passed": false,
+                    "expected": "General Support Team",
+                    "actual": "Incident Response Team"
+                },
+                {
+                    "check": "web_search_used",
+                    "passed": false,
+                    "expected": true,
+                    "actual": null
+                },
+                {
+                    "check": "suggested_solution",
+                    "passed": true,
+                    "actual_count": 6
+                },
+                {
+                    "check": "audit_trail",
+                    "passed": false,
+                    "actual_count": 0
+                }
+            ],
+            "actual_response": {
+                "ticket_id": "TICKET-2CFD4586",
+                "category": "Production Outage",
+                "priority": "High",
+                "assigned_team": "Incident Response Team",
+                "suggested_solution": [
+                    "Based on the provided internal knowledge base, I've generated the following response:",
+                    "Issue Summary:**",
+                    "The GitHub Actions CI pipeline is failing during the build step after dependency installation, indicating a potential issue with outdated GitHub dependencies or compatibility problems.",
+                    "Troubleshooting Steps:**",
+                    "1. Request more information about the specific GitHub dependencies that are believed to be outdated.",
+                    "2. Examine logs to identify any error messages or clues that could point to the root cause of the issue."
+                ]
+            }
+        },
+        {
+            "name": "Production outage should trigger critical escalation and guardrail",
+            "passed": false,
+            "response_time_seconds": 16.35,
+            "checks": [
+                {
+                    "check": "required_fields",
+                    "passed": false,
+                    "missing_fields": [
+                        "confidence",
+                        "rag_used",
+                        "rag_score",
+                        "rag_sources",
+                        "web_search_used",
+                        "recommended_action",
+                        "audit_trail"
+                    ]
+                },
+                {
+                    "check": "category",
+                    "passed": true,
+                    "expected": "Production Outage",
+                    "actual": "Production Outage"
+                },
+                {
+                    "check": "assigned_team",
+                    "passed": true,
+                    "expected": "Incident Response Team",
+                    "actual": "Incident Response Team"
+                },
+                {
+                    "check": "web_search_used",
+                    "passed": false,
+                    "expected": false,
+                    "actual": null
+                },
+                {
+                    "check": "priority",
+                    "passed": true,
+                    "expected": "Critical",
+                    "actual": "Critical"
+                },
+                {
+                    "check": "guardrail_applied",
+                    "passed": false,
+                    "expected": true,
+                    "actual": null
+                },
+                {
+                    "check": "escalation_required",
+                    "passed": false,
+                    "expected": true,
+                    "actual": null
+                },
+                {
+                    "check": "sla_breach_risk",
+                    "passed": false,
+                    "expected": "High",
+                    "actual": null
+                },
+                {
+                    "check": "suggested_solution",
+                    "passed": true,
+                    "actual_count": 6
+                },
+                {
+                    "check": "audit_trail",
+                    "passed": false,
+                    "actual_count": 0
+                }
+            ],
+            "actual_response": {
+                "ticket_id": "TICKET-0A7D5002",
+                "category": "Production Outage",
+                "priority": "Critical",
+                "assigned_team": "Incident Response Team",
+                "suggested_solution": [
+                    "Based on the internal knowledge base, I've generated the following:",
+                    "Issue Summary:**",
+                    "The production system is currently down, affecting all customers and blocking access to the application and customer transactions. The issue may be related to recent updates or integration problems.",
+                    "Troubleshooting Steps:**",
+                    "1. Check the email for further details on the issue.",
+                    "2. Attempt to restart services."
+                ]
+            }
+        },
+        {
+            "name": "Security incident should trigger guardrail and security routing",
+            "passed": false,
+            "response_time_seconds": 20.17,
+            "checks": [
+                {
+                    "check": "required_fields",
+                    "passed": false,
+                    "missing_fields": [
+                        "confidence",
+                        "rag_used",
+                        "rag_score",
+                        "rag_sources",
+                        "web_search_used",
+                        "recommended_action",
+                        "audit_trail"
+                    ]
+                },
+                {
+                    "check": "category",
+                    "passed": true,
+                    "expected": "Security Incident",
+                    "actual": "Security Incident"
+                },
+                {
+                    "check": "assigned_team",
+                    "passed": true,
+                    "expected": "Security / IAM Team",
+                    "actual": "Security / IAM Team"
+                },
+                {
+                    "check": "web_search_used",
+                    "passed": false,
+                    "expected": false,
+                    "actual": null
+                },
+                {
+                    "check": "priority",
+                    "passed": false,
+                    "expected": "Critical",
+                    "actual": "High"
+                },
+                {
+                    "check": "guardrail_applied",
+                    "passed": false,
+                    "expected": true,
+                    "actual": null
+                },
+                {
+                    "check": "escalation_required",
+                    "passed": false,
+                    "expected": true,
+                    "actual": null
+                },
+                {
+                    "check": "sla_breach_risk",
+                    "passed": false,
+                    "expected": "High",
+                    "actual": null
+                },
+                {
+                    "check": "suggested_solution",
+                    "passed": true,
+                    "actual_count": 6
+                },
+                {
+                    "check": "audit_trail",
+                    "passed": false,
+                    "actual_count": 0
+                }
+            ],
+            "actual_response": {
+                "ticket_id": "TICKET-AF0AC227",
+                "category": "Security Incident",
+                "priority": "High",
+                "assigned_team": "Security / IAM Team",
+                "suggested_solution": [
+                    "Based on the internal knowledge base, I've generated the following:",
+                    "Issue Summary:**",
+                    "The user has reported a suspicious login from an unknown device, which may indicate a potential phishing or credential theft event. This has triggered a security breach alert, and the user is concerned about the security of their account.",
+                    "Troubleshooting Steps:**",
+                    "1. Request the user to provide details regarding the suspicious access or unauthorized login attempt.",
+                    "2. Schedule a call to discuss the next steps to ensure the security of the systems."
+                ]
+            }
+        },
+        {
+            "name": "Data loss incident should trigger high priority escalation",
+            "passed": false,
+            "response_time_seconds": 17.35,
+            "checks": [
+                {
+                    "check": "required_fields",
+                    "passed": false,
+                    "missing_fields": [
+                        "confidence",
+                        "rag_used",
+                        "rag_score",
+                        "rag_sources",
+                        "web_search_used",
+                        "recommended_action",
+                        "audit_trail"
+                    ]
+                },
+                {
+                    "check": "category",
+                    "passed": false,
+                    "expected": "Data Loss Incident",
+                    "actual": "Data Loss"
+                },
+                {
+                    "check": "assigned_team",
+                    "passed": false,
+                    "expected": "Data Support Team",
+                    "actual": "Senior Support Specialist"
+                },
+                {
+                    "check": "web_search_used",
+                    "passed": false,
+                    "expected": false,
+                    "actual": null
+                },
+                {
+                    "check": "priority",
+                    "passed": false,
+                    "expected": "High",
+                    "actual": "Critical"
+                },
+                {
+                    "check": "guardrail_applied",
+                    "passed": false,
+                    "expected": true,
+                    "actual": null
+                },
+                {
+                    "check": "escalation_required",
+                    "passed": false,
+                    "expected": true,
+                    "actual": null
+                },
+                {
+                    "check": "sla_breach_risk",
+                    "passed": false,
+                    "expected": "High",
+                    "actual": null
+                },
+                {
+                    "check": "suggested_solution",
+                    "passed": true,
+                    "actual_count": 6
+                },
+                {
+                    "check": "audit_trail",
+                    "passed": false,
+                    "actual_count": 0
+                }
+            ],
+            "actual_response": {
+                "ticket_id": "TICKET-475CC122",
+                "category": "Data Loss",
+                "priority": "Critical",
+                "assigned_team": "Senior Support Specialist",
+                "suggested_solution": [
+                    "Based on the provided internal knowledge base, I've generated the following response:",
+                    "Issue Summary:**",
+                    "The user is reporting that several customer records are missing after the latest cleanup job, suspecting deleted data or database corruption. This issue is similar to previous cases where medical records vanished from the database, possibly due to inadequate access controls, human error, or software malfunction.",
+                    "Troubleshooting Steps:**",
+                    "1. Restart the server to ensure it's not a temporary issue.",
+                    "2. Examine the backups to see if the missing data can be retrieved."
+                ]
+            }
+        },
+        {
+            "name": "Ambiguous productivity issue should not over-escalate",
+            "passed": false,
+            "response_time_seconds": 12.05,
+            "checks": [
+                {
+                    "check": "required_fields",
+                    "passed": false,
+                    "missing_fields": [
+                        "confidence",
+                        "rag_used",
+                        "rag_score",
+                        "rag_sources",
+                        "web_search_used",
+                        "recommended_action",
+                        "audit_trail"
+                    ]
+                },
+                {
+                    "check": "category",
+                    "passed": true,
+                    "expected": [
+                        "Access Issue",
+                        "Service Request",
+                        "General Support"
+                    ],
+                    "actual": "Access Issue"
+                },
+                {
+                    "check": "assigned_team",
+                    "passed": true,
+                    "expected": [
+                        "Security / IAM Team",
+                        "Service Desk Team",
+                        "General Support Team"
+                    ],
+                    "actual": "Security / IAM Team"
+                },
+                {
+                    "check": "web_search_used",
+                    "passed": false,
+                    "expected": false,
+                    "actual": null
+                },
+                {
+                    "check": "priority",
+                    "passed": true,
+                    "expected": [
+                        "Low",
+                        "Medium"
+                    ],
+                    "actual": "Low"
+                },
+                {
+                    "check": "guardrail_applied",
+                    "passed": false,
+                    "expected": false,
+                    "actual": null
+                },
+                {
+                    "check": "escalation_required",
+                    "passed": false,
+                    "expected": false,
+                    "actual": null
+                },
+                {
+                    "check": "sla_breach_risk",
+                    "passed": false,
+                    "expected": [
+                        "Low",
+                        "Medium"
+                    ],
+                    "actual": null
+                },
+                {
+                    "check": "suggested_solution",
+                    "passed": true,
+                    "actual_count": 6
+                },
+                {
+                    "check": "audit_trail",
+                    "passed": false,
+                    "actual_count": 0
+                }
+            ],
+            "actual_response": {
+                "ticket_id": "TICKET-E0829BE9",
+                "category": "Access Issue",
+                "priority": "Low",
+                "assigned_team": "Security / IAM Team",
+                "suggested_solution": [
+                    "Issue Understanding:",
+                    "The user is requesting access to the quarterly report folder but is unsure which permission group to request. The issue is related to access rights and permissions.",
+                    "Likely Cause:",
+                    "The likely cause of the issue is that the user does not have the necessary permissions or is not a member of the correct permission group to access the quarterly report folder.",
+                    "Steps:",
+                    "To troubleshoot this issue, the user can try the following steps:"
+                ]
+            }
+        },
+        {
+            "name": "Performance regression after deployment should prefer backend or devops",
+            "passed": false,
+            "response_time_seconds": 12.96,
+            "checks": [
+                {
+                    "check": "required_fields",
+                    "passed": false,
+                    "missing_fields": [
+                        "confidence",
+                        "rag_used",
+                        "rag_score",
+                        "rag_sources",
+                        "web_search_used",
+                        "recommended_action",
                         "audit_trail"
                     ]
                 },
@@ -327,7 +890,7 @@
                         "Bug",
                         "Performance Issue"
                     ],
-                    "actual": "Bug"
+                    "actual": "Performance Issue"
                 },
                 {
                     "check": "assigned_team",
@@ -336,18 +899,49 @@
                         "Backend Team",
                         "DevOps Team"
                     ],
-                    "actual": "Backend Team"
+                    "actual": "DevOps Team"
                 },
                 {
                     "check": "web_search_used",
                     "passed": false,
                     "expected": false,
-                    "actual": true
+                    "actual": null
+                },
+                {
+                    "check": "priority",
+                    "passed": true,
+                    "expected": [
+                        "High",
+                        "Critical",
+                        "Medium"
+                    ],
+                    "actual": "Critical"
+                },
+                {
+                    "check": "guardrail_applied",
+                    "passed": false,
+                    "expected": false,
+                    "actual": null
+                },
+                {
+                    "check": "escalation_required",
+                    "passed": false,
+                    "expected": true,
+                    "actual": null
+                },
+                {
+                    "check": "sla_breach_risk",
+                    "passed": false,
+                    "expected": [
+                        "High",
+                        "Medium"
+                    ],
+                    "actual": null
                 },
                 {
                     "check": "suggested_solution",
                     "passed": true,
-                    "actual_count": 3
+                    "actual_count": 6
                 },
                 {
                     "check": "audit_trail",
@@ -356,52 +950,82 @@
                 }
             ],
             "actual_response": {
-                "ticket_id": "TICKET-F4D709A4",
-                "category": "Bug",
-                "confidence": 0.7,
-                "priority": "Low",
-                "assigned_team": "Backend Team",
-                "rag_used": false,
-                "rag_score": 0.0,
-                "rag_sources": [],
-                "web_search_used": true,
+                "ticket_id": "TICKET-9887F0F1",
+                "category": "Performance Issue",
+                "priority": "Critical",
+                "assigned_team": "DevOps Team",
                 "suggested_solution": [
-                    "RAG was weak and web search fallback failed.",
-                    "Please review this ticket manually.",
-                    "Technical detail: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite\\nPlease retry in 35.106814327s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.5-flash-lite'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '35s'}]}}"
+                    "Based on the provided internal knowledge base, I've generated the following:",
+                    "Issue Summary:**",
+                    "The user is experiencing a significant increase in API response time, with requests timing out and repeated failures in the backend logs, after the latest deployment. This issue is similar to previously reported problems with API response delays during peak usage hours, which were potentially caused by increased server load.",
+                    "Troubleshooting Steps:**",
+                    "1. Investigate the API response delays to determine the root cause, considering the possibility of increased server load.",
+                    "2. Review the backend logs to identify any patterns or correlations with the repeated failures."
                 ]
             }
         },
         {
-            "name": "Docker issue should trigger web search fallback",
+            "name": "Email attachment issue should stay in messaging support path",
             "passed": false,
-            "response_time_seconds": 0.57,
+            "response_time_seconds": 0.42,
             "checks": [
                 {
                     "check": "required_fields",
                     "passed": false,
                     "missing_fields": [
-                        "first_response",
+                        "confidence",
+                        "rag_used",
+                        "rag_score",
+                        "rag_sources",
+                        "web_search_used",
+                        "recommended_action",
                         "audit_trail"
                     ]
                 },
                 {
                     "check": "category",
                     "passed": true,
-                    "expected": "General Support",
-                    "actual": "General Support"
+                    "expected": "Email Issue",
+                    "actual": "Email Issue"
                 },
                 {
                     "check": "assigned_team",
                     "passed": true,
-                    "expected": "General Support Team",
-                    "actual": "General Support Team"
+                    "expected": "Messaging / Email Support Team",
+                    "actual": "Messaging / Email Support Team"
                 },
                 {
                     "check": "web_search_used",
+                    "passed": false,
+                    "expected": false,
+                    "actual": null
+                },
+                {
+                    "check": "priority",
                     "passed": true,
-                    "expected": true,
-                    "actual": true
+                    "expected": "Medium",
+                    "actual": "Medium"
+                },
+                {
+                    "check": "guardrail_applied",
+                    "passed": false,
+                    "expected": false,
+                    "actual": null
+                },
+                {
+                    "check": "escalation_required",
+                    "passed": false,
+                    "expected": false,
+                    "actual": null
+                },
+                {
+                    "check": "sla_breach_risk",
+                    "passed": false,
+                    "expected": [
+                        "Medium",
+                        "Low"
+                    ],
+                    "actual": null
                 },
                 {
                     "check": "suggested_solution",
@@ -415,83 +1039,14 @@
                 }
             ],
             "actual_response": {
-                "ticket_id": "TICKET-9075CB49",
-                "category": "General Support",
-                "confidence": 0.7,
-                "priority": "Low",
-                "assigned_team": "General Support Team",
-                "rag_used": false,
-                "rag_score": 0.4089,
-                "rag_sources": [
-                    "api_timeout.txt"
-                ],
-                "web_search_used": true,
-                "suggested_solution": [
-                    "RAG was weak and web search fallback failed.",
-                    "Please review this ticket manually.",
-                    "Technical detail: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite\\nPlease retry in 34.527734239s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.5-flash-lite'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '34s'}]}}"
-                ]
-            }
-        },
-        {
-            "name": "GitHub Actions issue should trigger web search fallback",
-            "passed": false,
-            "response_time_seconds": 0.56,
-            "checks": [
-                {
-                    "check": "required_fields",
-                    "passed": false,
-                    "missing_fields": [
-                        "first_response",
-                        "audit_trail"
-                    ]
-                },
-                {
-                    "check": "category",
-                    "passed": false,
-                    "expected": "General Support",
-                    "actual": "Bug"
-                },
-                {
-                    "check": "assigned_team",
-                    "passed": false,
-                    "expected": "General Support Team",
-                    "actual": "Frontend Team"
-                },
-                {
-                    "check": "web_search_used",
-                    "passed": true,
-                    "expected": true,
-                    "actual": true
-                },
-                {
-                    "check": "suggested_solution",
-                    "passed": true,
-                    "actual_count": 3
-                },
-                {
-                    "check": "audit_trail",
-                    "passed": false,
-                    "actual_count": 0
-                }
-            ],
-            "actual_response": {
-                "ticket_id": "TICKET-D3FD1CF1",
-                "category": "Bug",
-                "confidence": 0.7,
+                "ticket_id": "TICKET-92258C20",
+                "category": "Email Issue",
                 "priority": "Medium",
-                "assigned_team": "Frontend Team",
-                "rag_used": false,
-                "rag_score": 0.4086,
-                "rag_sources": [
-                    "api_timeout.txt",
-                    "software_installation.txt"
-                ],
-                "web_search_used": true,
+                "assigned_team": "Messaging / Email Support Team",
                 "suggested_solution": [
-                    "RAG was weak and web search fallback failed.",
-                    "Please review this ticket manually.",
-                    "Technical detail: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite\\nPlease retry in 33.964660168s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-2.5-flash-lite', 'location': 'global'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '33s'}]}}"
+                    "Web fallback failed.",
+                    "Please review manually.",
+                    "Error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kvwf689wfr6a4fkq1dpswrm8` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99725, Requested 364. Please try again in 1m16.896s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
                 ]
             }
         }

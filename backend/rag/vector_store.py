@@ -16,7 +16,7 @@ class VectorStoreManager:
     def __init__(self):
         VECTOR_DB_DIR.mkdir(parents=True, exist_ok=True)
 
-        self.client = chromadb.PersistentClient(
+        self.client = chromadb.PersistentClient( 
             path=str(VECTOR_DB_DIR)
         )
 
@@ -86,7 +86,7 @@ class VectorStoreManager:
 
             print(f"Batch {i // BATCH_SIZE + 1} added")
 
-        print("✅ ChromaDB vector store created successfully.")
+        print("ChromaDB vector store created successfully")
 
         return {
             "status": "success",
@@ -107,13 +107,11 @@ class VectorStoreManager:
 
         except Exception:
             raise ValueError(
-                "ChromaDB collection not found. Please build vector store first."
+                "ChromaDB collection not found. Please build vector store first"
             )
 
 
 vector_store_manager = VectorStoreManager()
 
 
-if __name__ == "__main__":
-    result = vector_store_manager.build_vector_store()
-    print(result)
+

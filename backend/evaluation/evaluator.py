@@ -10,6 +10,7 @@ from evaluation.testcases import TEST_CASES
 DEFAULT_BASE_URL = "http://127.0.0.1:8000"
 REPORT_DIR = Path("memory")
 REPORT_FILE = REPORT_DIR / "evaluation_report.json"
+REQUEST_TIMEOUT_SECONDS = 180
 
 
 class EvaluationRunner:
@@ -58,7 +59,7 @@ class EvaluationRunner:
             response = requests.post(
                 self.triage_url,
                 json=request_body,
-                timeout=60
+                timeout=REQUEST_TIMEOUT_SECONDS
             )
 
             end_time = time.time()
@@ -87,6 +88,23 @@ class EvaluationRunner:
                 "response_time_seconds": response_time,
                 "checks": validation_result["checks"],
                 "actual_response": response_json
+            }
+
+        except requests.exceptions.Timeout as error:
+            return {
+                "name": test_name,
+                "passed": False,
+                "error": (
+                    f"Request timed out after {REQUEST_TIMEOUT_SECONDS} seconds. "
+                    f"Backend likely took too long to respond: {error}"
+                )
+            }
+
+        except requests.exceptions.RequestException as error:
+            return {
+                "name": test_name,
+                "passed": False,
+                "error": f"HTTP request failed: {error}"
             }
 
         except Exception as error:
@@ -132,6 +150,42 @@ class EvaluationRunner:
             )
         )
 
+        if "expected_priority" in test_case:
+            checks.append(
+                self.check_expected_value(
+                    field_name="priority",
+                    actual_value=response_json.get("priority"),
+                    expected_value=test_case.get("expected_priority")
+                )
+            )
+
+        if "expected_guardrail_applied" in test_case:
+            checks.append(
+                self.check_expected_value(
+                    field_name="guardrail_applied",
+                    actual_value=response_json.get("guardrail_applied"),
+                    expected_value=test_case.get("expected_guardrail_applied")
+                )
+            )
+
+        if "expected_escalation_required" in test_case:
+            checks.append(
+                self.check_expected_value(
+                    field_name="escalation_required",
+                    actual_value=response_json.get("escalation_required"),
+                    expected_value=test_case.get("expected_escalation_required")
+                )
+            )
+
+        if "expected_sla_breach_risk" in test_case:
+            checks.append(
+                self.check_expected_value(
+                    field_name="sla_breach_risk",
+                    actual_value=response_json.get("sla_breach_risk"),
+                    expected_value=test_case.get("expected_sla_breach_risk")
+                )
+            )
+
         checks.append(
             self.check_non_empty_list(
                 field_name="suggested_solution",
@@ -165,7 +219,7 @@ class EvaluationRunner:
             "rag_sources",
             "web_search_used",
             "suggested_solution",
-            "first_response",
+            "recommended_action",
             "audit_trail"
         ]
 

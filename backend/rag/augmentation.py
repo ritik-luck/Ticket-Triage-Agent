@@ -42,7 +42,7 @@ class AugmentationManager:
             retrieved_context=retrieved_context
         )
 
-        print("Generating RAG answer using Groq...")
+        print("Generating RAG answer using LLM...")
         response_text = generate_response(prompt)
 
         suggested_solution = self._convert_response_to_steps(response_text)
@@ -72,12 +72,10 @@ class AugmentationManager:
     def _build_prompt(self, ticket_text: str, retrieved_context: str):
         return f"""
 You are an AI IT Helpdesk Ticket Triage Assistant.
-
 Use ONLY the internal knowledge base below.
 
 User Ticket:
 {ticket_text}
-
 Context:
 {retrieved_context}
 

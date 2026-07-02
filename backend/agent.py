@@ -1,12 +1,13 @@
 import uuid
 from typing import List, Dict, Any, Optional
-
 from models import TicketRequest, TriageResponse
 from rag.augmentation import augmentation_manager
 from tools.classification import classify_ticket
-from tools.priority import detect_priority
+from tools.priority import detect_priority, is_escalation_required
 from tools.routing import route_ticket
+from tools.response import generate_final_response
 from tools.web_search import web_search_fallback
+from tools.sla import predict_sla
 from memory.memory_manager import memory_manager
 from tools.guadrails import apply_guardrails
 
@@ -40,7 +41,6 @@ def find_cached_ticket(issue_text: str) -> Optional[Dict[str, Any]]:
     for ticket in reversed(past_tickets):
         ticket_subject = str(ticket.get("subject", "")).lower()
         ticket_description = str(ticket.get("description", "")).lower()
-
         suggested_solution = ticket.get("suggested_solution", [])
 
         if not isinstance(suggested_solution, list):
@@ -79,6 +79,29 @@ def convert_web_answer_to_steps(answer: str) -> List[str]:
         steps.append(answer.strip())
 
     return steps[:6]
+
+
+def build_decision_context(
+    issue_text: str,
+    llm_response: str,
+    suggested_solution: List[str],
+    retrieved_context: str = ""
+) -> str:
+    solution_text = "\n".join(f"- {step}" for step in suggested_solution)
+
+    return f"""
+Raw User Ticket:
+{issue_text}
+
+LLM / RAG Analysis:
+{llm_response or "No LLM analysis available."}
+
+Suggested Solution:
+{solution_text or "No suggested solution available."}
+
+Retrieved Knowledge Context:
+{retrieved_context or "No retrieved context available."}
+""".strip()
 
 
 def calculate_confidence(
@@ -149,14 +172,25 @@ def run_ticket_triage(request: TicketRequest) -> TriageResponse:
 
     rag_used = rag_result.get("rag_used", False)
     rag_score = rag_result.get("rag_score", 0.0)
-    rag_sources = rag_result.get("rag_sources", [])
-    suggested_solution = rag_result.get("suggested_solution", [])
+    rag_sources_value = rag_result.get("rag_sources", [])
+    if rag_sources_value is None:
+        rag_sources = []
+    elif isinstance(rag_sources_value, list):
+        rag_sources = [str(item) for item in rag_sources_value if str(item).strip()]
+    else:
+        rag_sources = [str(rag_sources_value)]
 
-    if not isinstance(rag_sources, list):
-        rag_sources = [str(rag_sources)]
-
-    if not isinstance(suggested_solution, list):
-        suggested_solution = [str(suggested_solution)]
+    suggested_solution_value = rag_result.get("suggested_solution", [])
+    if suggested_solution_value is None:
+        suggested_solution = []
+    elif isinstance(suggested_solution_value, list):
+        suggested_solution = [
+            str(item) for item in suggested_solution_value if str(item).strip()
+        ]
+    else:
+        suggested_solution = [str(suggested_solution_value)]
+    retrieved_context = rag_result.get("retrieved_context", "")
+    llm_response = rag_result.get("llm_response", "")
 
     web_search_used = False
 
@@ -177,6 +211,7 @@ def run_ticket_triage(request: TicketRequest) -> TriageResponse:
             )
 
             suggested_solution = convert_web_answer_to_steps(web_answer)
+            llm_response = web_answer
             audit_trail.append("Web fallback executed successfully.")
 
         except Exception as error:
@@ -186,13 +221,23 @@ def run_ticket_triage(request: TicketRequest) -> TriageResponse:
                 f"Error: {str(error)}"
             ]
 
+            llm_response = "Web fallback failed. Manual review is required."
             audit_trail.append(f"Web fallback failed: {str(error)}")
 
-    category = classify_ticket(issue_text)
-    priority = detect_priority(issue_text)
+    decision_context = build_decision_context(
+        issue_text=issue_text,
+        llm_response=llm_response,
+        suggested_solution=suggested_solution,
+        retrieved_context=retrieved_context
+    )
+
+    category = classify_ticket(decision_context)
+
+    priority = detect_priority(decision_context)
+
     assigned_team = route_ticket(
         category=category,
-        ticket_text=issue_text
+        ticket_text=decision_context
     )
 
     audit_trail.append(f"Ticket category detected as: {category}")
@@ -203,13 +248,14 @@ def run_ticket_triage(request: TicketRequest) -> TriageResponse:
         category=category,
         priority=priority,
         assigned_team=assigned_team,
-        ticket_text=issue_text
+        ticket_text=decision_context
     )
 
     category = guardrail_result.get("category", category)
     priority = guardrail_result.get("priority", priority)
     assigned_team = guardrail_result.get("assigned_team", assigned_team)
     guardrail_applied = guardrail_result.get("guardrail_applied", False)
+    guardrail_reason = guardrail_result.get("reason")
 
     if guardrail_result.get("reason"):
         audit_trail.append(guardrail_result["reason"])
@@ -232,9 +278,32 @@ def run_ticket_triage(request: TicketRequest) -> TriageResponse:
         rag_score=rag_score,
         web_search_used=web_search_used
     )
-
     audit_trail.append(f"Final confidence calculated as: {confidence}")
-    audit_trail.append("Final triage response generated successfully.")
+
+    escalation_required = is_escalation_required(
+        priority=priority,
+        ticket_text=decision_context
+    )
+
+    sla_result = predict_sla(
+        category=category,
+        priority=priority,
+        assigned_team=assigned_team,
+        escalation_required=escalation_required,
+        confidence=confidence
+    )
+    audit_trail.append(sla_result["sla_reason"])
+
+    final_response = generate_final_response(
+        ticket_text=full_ticket_text,
+        category=category,
+        priority=priority,
+        assigned_team=assigned_team,
+        escalation_required=escalation_required,
+        rag_context=retrieved_context,
+        fallback_response=llm_response
+    )
+    recommended_action = final_response.get("recommended_action")
 
     response = TriageResponse(
         ticket_id=ticket_id,
@@ -247,8 +316,17 @@ def run_ticket_triage(request: TicketRequest) -> TriageResponse:
         rag_sources=rag_sources,
         web_search_used=web_search_used,
         suggested_solution=suggested_solution,
+        llm_response=llm_response,
+        recommended_action=recommended_action,
+        escalation_required=escalation_required,
+        sla_target_hours=sla_result.get("sla_target_hours"),
+        sla_response_hours=sla_result.get("sla_response_hours"),
+        sla_breach_risk=sla_result.get("sla_breach_risk"),
+        sla_escalation_required=sla_result.get("sla_escalation_required", False),
+        sla_reason=sla_result.get("sla_reason"),
         audit_trail=audit_trail,
-        guardrail_applied=guardrail_applied
+        guardrail_applied=guardrail_applied,
+        guardrail_reason=guardrail_reason
     )
 
     memory_manager.save_ticket_log(response.model_dump())

@@ -1,4 +1,10 @@
-def classify_ticket(ticket_text: str) -> str:
+import json
+from typing import Any, Dict, Optional
+from llm.groq import generate_response
+
+threshold = 0.70
+
+def _keyword_classify_ticket(ticket_text: str) -> Dict[str, Any]:
     text = ticket_text.lower()
 
     if any(keyword in text for keyword in [
@@ -14,7 +20,7 @@ def classify_ticket(ticket_text: str) -> str:
         "many users affected",
         "business critical outage"
     ]):
-        return "Production Outage"
+        return {"category": "Production Outage", "confidence": 1.0, "source": "rule_based_fallback"}
 
     if any(keyword in text for keyword in [
         "phishing",
@@ -32,7 +38,7 @@ def classify_ticket(ticket_text: str) -> str:
         "security incident",
         "hacked"
     ]):
-        return "Security Incident"
+        return {"category": "Security Incident", "confidence": 1.0, "source": "rule_based_fallback"}
 
     if any(keyword in text for keyword in [
         "login",
@@ -45,7 +51,7 @@ def classify_ticket(ticket_text: str) -> str:
         "unable to login",
         "cannot login"
     ]):
-        return "Access Issue"
+        return {"category": "Access Issue", "confidence": 1.0, "source": "rule_based_fallback"}
 
     if any(keyword in text for keyword in [
         "vpn",
@@ -57,7 +63,7 @@ def classify_ticket(ticket_text: str) -> str:
         "connection",
         "not connecting"
     ]):
-        return "Network Issue"
+        return {"category": "Network Issue", "confidence": 1.0, "source": "rule_based_fallback"}
 
     if any(keyword in text for keyword in [
         "monitor",
@@ -72,7 +78,7 @@ def classify_ticket(ticket_text: str) -> str:
         "hardware",
         "charger"
     ]):
-        return "Hardware Issue"
+        return {"category": "Hardware Issue", "confidence": 1.0, "source": "rule_based_fallback"}
 
     if any(keyword in text for keyword in [
         "laptop slow",
@@ -83,7 +89,7 @@ def classify_ticket(ticket_text: str) -> str:
         "cpu",
         "memory"
     ]):
-        return "Desktop Issue"
+        return {"category": "Desktop Issue", "confidence": 1.0, "source": "rule_based_fallback"}
 
     if any(keyword in text for keyword in [
         "outlook",
@@ -94,7 +100,7 @@ def classify_ticket(ticket_text: str) -> str:
         "attachment",
         "outbox"
     ]):
-        return "Email Issue"
+        return {"category": "Email Issue", "confidence": 1.0, "source": "rule_based_fallback"}
 
     if any(keyword in text for keyword in [
         "software installation",
@@ -103,7 +109,7 @@ def classify_ticket(ticket_text: str) -> str:
         "new software",
         "software request"
     ]):
-        return "Software Request"
+        return {"category": "Software Request", "confidence": 1.0, "source": "rule_based_fallback"}
 
     if any(keyword in text for keyword in [
         "api",
@@ -117,7 +123,7 @@ def classify_ticket(ticket_text: str) -> str:
         "failed",
         "not working"
     ]):
-        return "Bug"
+        return {"category": "Bug", "confidence": 1.0, "source": "rule_based_fallback"}
 
     if any(keyword in text for keyword in [
         "slow",
@@ -126,7 +132,7 @@ def classify_ticket(ticket_text: str) -> str:
         "delay",
         "loading"
     ]):
-        return "Performance Issue"
+        return {"category": "Performance Issue", "confidence": 1.0, "source": "rule_based_fallback"}
 
     if any(keyword in text for keyword in [
         "invoice",
@@ -135,7 +141,7 @@ def classify_ticket(ticket_text: str) -> str:
         "refund",
         "charge"
     ]):
-        return "Billing Issue"
+        return {"category": "Billing Issue", "confidence": 1.0, "source": "rule_based_fallback"}
 
     if any(keyword in text for keyword in [
         "feature",
@@ -144,6 +150,82 @@ def classify_ticket(ticket_text: str) -> str:
         "request",
         "new functionality"
     ]):
-        return "Feature Request"
+        return {"category": "Feature Request", "confidence": 1.0, "source": "rule_based_fallback"}
 
-    return "General Support"
+    return {"category": "General Support", "confidence": 0.5, "source": "rule_based_fallback"}
+
+
+def _parse_llm_json(raw_text: str) -> Optional[Dict[str, Any]]:
+    if not raw_text:
+        return None
+
+    try:
+        return json.loads(raw_text)
+    except json.JSONDecodeError:
+        start = raw_text.find("{")
+        end = raw_text.rfind("}")
+
+        if start == -1 or end == -1 or end <= start:
+            return None
+
+        try:
+            return json.loads(raw_text[start : end + 1])
+        except json.JSONDecodeError:
+            return None
+
+
+def _build_classification_prompt(ticket_text: str) -> str:
+    return f"""
+You are an IT ticket classifier.
+Return ONLY valid JSON with these keys:
+{{
+  "category": "one of: Production Outage, Security Incident, Access Issue, Network Issue, Hardware Issue, Desktop Issue, Email Issue, Software Request, Bug, Performance Issue, Billing Issue, Feature Request, General Support",
+  "confidence": number between 0 and 1,
+  "reason": "short explanation"
+}}
+
+Ticket text:
+{ticket_text}
+
+Use the category that best matches the issue description.
+""".strip()
+
+
+def _normalize_classification_result(
+    result: Dict[str, Any],
+    fallback_category: str
+) -> Dict[str, Any]:
+    confidence = float(result.get("confidence", 0.0) or 0.0)
+    if confidence < 0.0:
+        confidence = 0.0
+    if confidence > 1.0:
+        confidence = 1.0
+
+    return {
+        "category": str(result.get("category") or fallback_category),
+        "confidence": confidence,
+        "reason": result.get("reason"),
+        "source": "llm",
+    }
+
+
+def classify_ticket(ticket_text: str) -> str:
+    prompt = _build_classification_prompt(ticket_text)
+
+    try:
+        llm_output = generate_response(prompt)
+        parsed = _parse_llm_json(llm_output)
+
+        if not parsed:
+            return _keyword_classify_ticket(ticket_text)["category"]
+
+        fallback = _keyword_classify_ticket(ticket_text)
+        normalized = _normalize_classification_result(parsed, fallback["category"])
+
+        if normalized["confidence"] < threshold:
+            return fallback["category"]
+
+        return normalized["category"]
+
+    except Exception:
+        return _keyword_classify_ticket(ticket_text)["category"]

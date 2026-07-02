@@ -7,6 +7,7 @@ function AnalyticsDashboard({ refreshKey = 0 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showGuardrailBreakdown, setShowGuardrailBreakdown] = useState(false);
+  const [showSlaBreakdown, setShowSlaBreakdown] = useState(false);
 
   const fetchAnalytics = async () => {
     try {
@@ -60,11 +61,18 @@ function AnalyticsDashboard({ refreshKey = 0 }) {
   };
 
   const getGuardrailDescription = (ticket) => {
+    const explicitReason =
+      ticket.guardrail_reason || ticket.guardrailReason || "";
+
+    if (String(explicitReason).trim()) {
+      return String(explicitReason);
+    }
+
     const auditTrail = getAuditTrail(ticket);
 
     if (Array.isArray(auditTrail)) {
       const reason = auditTrail.find((item) =>
-        String(item).toLowerCase().includes("guardrail applied")
+        String(item).toLowerCase().includes("guardrail")
       );
 
       return reason || "Guardrail applied";
@@ -72,7 +80,7 @@ function AnalyticsDashboard({ refreshKey = 0 }) {
 
     const auditText = String(auditTrail || "");
 
-    if (auditText.toLowerCase().includes("guardrail applied")) {
+    if (auditText.toLowerCase().includes("guardrail")) {
       return auditText;
     }
 
@@ -95,7 +103,7 @@ function AnalyticsDashboard({ refreshKey = 0 }) {
       return (
         ticket.guardrail_applied === true ||
         ticket.guardrailApplied === true ||
-        auditText.includes("guardrail applied")
+        auditText.includes("guardrail")
       );
     });
 
@@ -133,19 +141,81 @@ function AnalyticsDashboard({ refreshKey = 0 }) {
       );
     });
 
+    const slaTickets = tickets.filter(
+      (ticket) =>
+        ticket.sla_target_hours !== undefined ||
+        ticket.slaTargetHours !== undefined
+    );
+
+    const slaLowRiskTickets = slaTickets.filter((ticket) => {
+      const risk = String(
+        ticket.sla_breach_risk || ticket.slaBreachRisk || ""
+      ).toLowerCase();
+
+      return risk === "low";
+    });
+
+    const slaMediumRiskTickets = slaTickets.filter((ticket) => {
+      const risk = String(
+        ticket.sla_breach_risk || ticket.slaBreachRisk || ""
+      ).toLowerCase();
+
+      return risk === "medium";
+    });
+
+    const slaHighRiskTickets = slaTickets.filter((ticket) => {
+      const risk = String(
+        ticket.sla_breach_risk || ticket.slaBreachRisk || ""
+      ).toLowerCase();
+
+      return risk === "high";
+    });
+
     return {
       totalTicketCount: tickets.length,
       ragUsedCount,
       webSearchUsedCount,
-      guardrailCount: guardrailTickets.length,
+      guardrailCount:
+        productionOutageTickets.length +
+        securityIncidentTickets.length +
+        dataLossTickets.length,
+      guardrailTotalCount: guardrailTickets.length,
       productionOutageCount: productionOutageTickets.length,
       securityIncidentCount: securityIncidentTickets.length,
       dataLossCount: dataLossTickets.length,
+      slaTicketCount:
+        slaLowRiskTickets.length +
+        slaMediumRiskTickets.length +
+        slaHighRiskTickets.length,
+      slaTotalCount: slaTickets.length,
+      slaLowRiskCount: slaLowRiskTickets.length,
+      slaMediumRiskCount: slaMediumRiskTickets.length,
+      slaHighRiskCount: slaHighRiskTickets.length,
       latestGuardrailDescription: guardrailTickets.length
         ? getGuardrailDescription(guardrailTickets[guardrailTickets.length - 1])
         : "",
+      latestSlaDescription: slaTickets.length
+        ? getSlaDescription(slaTickets[slaTickets.length - 1])
+        : "",
     };
   }, [tickets]);
+
+  function getSlaDescription(ticket) {
+    const reason = ticket.sla_reason || ticket.slaReason || "";
+
+    if (String(reason).trim()) {
+      return String(reason);
+    }
+
+    const target = ticket.sla_target_hours || ticket.slaTargetHours;
+    const risk = ticket.sla_breach_risk || ticket.slaBreachRisk;
+
+    if (target) {
+      return `SLA target is ${target} hours with ${risk || "unknown"} breach risk.`;
+    }
+
+    return "SLA was calculated.";
+  }
 
   if (loading) {
     return (
@@ -180,13 +250,31 @@ function AnalyticsDashboard({ refreshKey = 0 }) {
         </div>
 
         <div className="analytics-card">
-          <span className="analytics-label">RAG Used</span>
+          <span className="analytics-label">Internal Search Used</span>
           <strong>{analytics.ragUsedCount}</strong>
         </div>
 
         <div className="analytics-card">
           <span className="analytics-label">Web Search Used</span>
           <strong>{analytics.webSearchUsedCount}</strong>
+        </div>
+
+        <div
+          className={`analytics-card guardrail-card guardrail-toggle-card ${
+            analytics.slaTicketCount > 0 ? "guardrail-active" : ""
+          }`}
+          role="button"
+          tabIndex={0}
+          onClick={() => setShowSlaBreakdown((prev) => !prev)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              setShowSlaBreakdown((prev) => !prev);
+            }
+          }}
+        >
+          <span className="analytics-label">SLA</span>
+          <strong>{analytics.slaTicketCount}</strong>
         </div>
 
         <div
@@ -203,7 +291,7 @@ function AnalyticsDashboard({ refreshKey = 0 }) {
             }
           }}
         >
-          <span className="analytics-label">Guardrail Count</span>
+          <span className="analytics-label">Guardrail</span>
           <strong>{analytics.guardrailCount}</strong>
         </div>
       </div>
@@ -229,6 +317,31 @@ function AnalyticsDashboard({ refreshKey = 0 }) {
           <div className="guardrail-breakdown-item">
             <span className="analytics-label">Data Loss</span>
             <strong>{analytics.dataLossCount}</strong>
+          </div>
+        </div>
+      )}
+
+      {showSlaBreakdown && (
+        <div className="guardrail-breakdown-box">
+          <div className="guardrail-breakdown-item">
+            <span className="analytics-label">Low Risk</span>
+            <strong>{analytics.slaLowRiskCount}</strong>
+          </div>
+          <div className="guardrail-breakdown-item">
+            <span className="analytics-label">Medium Risk</span>
+            <strong>{analytics.slaMediumRiskCount}</strong>
+          </div>
+          <div className="guardrail-breakdown-item">
+            <span className="analytics-label">High Risk</span>
+            <strong>{analytics.slaHighRiskCount}</strong>
+          </div>
+        </div>
+      )}
+
+      {analytics.slaTicketCount > 0 && (
+        <div className="guardrail-alert-box">
+          <div>
+            <p>{analytics.latestSlaDescription}</p>
           </div>
         </div>
       )}

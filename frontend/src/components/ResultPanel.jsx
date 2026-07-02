@@ -4,7 +4,7 @@ export default function ResultPanel({ result, loading, error, userRole = "user" 
       <div className="card result-card center-card">
         <div className="loader" />
         <h2>Agent is analyzing the ticket...</h2>
-        <p>Classification → RAG → Web Search fallback → Routing → Response</p>
+        <p>Classification → Internal Search → Web Search fallback → Routing → Response</p>
       </div>
     );
   }
@@ -14,9 +14,7 @@ export default function ResultPanel({ result, loading, error, userRole = "user" 
       <div className="card result-card error-card">
         <h2>Connection Error</h2>
         <p>{error}</p>
-        <p className="hint">
-          Make sure your backend is running at http://localhost:8000
-        </p>
+        <p className="hint">Make sure your backend is running at http://localhost:8000</p>
       </div>
     );
   }
@@ -31,10 +29,8 @@ export default function ResultPanel({ result, loading, error, userRole = "user" 
   }
 
   const isAdmin = userRole === "admin";
-
   const auditTrail = getAuditTrail(result);
   const auditText = getAuditText(result);
-
   const cacheTriggered = auditText.includes("cache");
 
   const guardrailTriggered =
@@ -47,9 +43,7 @@ export default function ResultPanel({ result, loading, error, userRole = "user" 
   return (
     <div className="card result-card">
       {cacheTriggered && (
-        <div className="cache-badge">
-          ⚡ Served from cache (recent similar issue)
-        </div>
+        <div className="cache-badge">⚡ Served from cache (recent similar issue)</div>
       )}
 
       {guardrailTriggered && (
@@ -81,28 +75,22 @@ export default function ResultPanel({ result, loading, error, userRole = "user" 
 
         <div className="summary-main">
           <span>Priority</span>
-          <strong
-            className={`priority-text ${String(
-              result.priority || ""
-            ).toLowerCase()}`}
-          >
+          <strong className={`priority-text ${String(result.priority || "").toLowerCase()}`}>
             {result.priority || "Not returned"}
           </strong>
         </div>
 
         <div className="summary-main">
           <span>Assigned Team</span>
-          <strong>
-            {result.assigned_team || result.assignedTeam || "Not returned"}
-          </strong>
+          <strong>{result.assigned_team || result.assignedTeam || "Not returned"}</strong>
         </div>
       </div>
 
       {isAdmin && (
         <div className="result-grid">
           <Info label="Confidence" value={formatValue(result.confidence)} />
-          <Info label="RAG Score" value={formatValue(result.rag_score)} />
-          <Info label="RAG Used" value={yesNo(result.rag_used)} />
+          <Info label="Internal Search Score" value={formatValue(result.rag_score)} />
+          <Info label="Internal Search Used" value={yesNo(result.rag_used)} />
           <Info label="Web Search Used" value={yesNo(result.web_search_used)} />
         </div>
       )}
@@ -116,8 +104,22 @@ export default function ResultPanel({ result, loading, error, userRole = "user" 
       )}
 
       {isAdmin && (
+        <div className="info-box">
+          <span>Jira</span>
+          <strong>{result.jira_created ? result.jira_key || "Created" : "Not created"}</strong>
+          {result.jira_url ? (
+            <a href={result.jira_url} target="_blank" rel="noreferrer">
+              Open in Jira
+            </a>
+          ) : (
+            <p className="hint">{result.jira_message || "No Jira status returned"}</p>
+          )}
+        </div>
+      )}
+
+      {isAdmin && (
         <Block
-          title="RAG Sources"
+          title="Internal Search Sources"
           data={result.rag_sources || result.ragSources}
           empty="No source returned"
         />
@@ -131,10 +133,22 @@ export default function ResultPanel({ result, loading, error, userRole = "user" 
 
       {isAdmin && (
         <Block
-          title="Audit Trail"
-          data={auditTrail}
-          empty="No audit trail returned"
+          title="Recommended Action"
+          data={result.recommended_action || result.recommendedAction}
+          empty="No recommended action returned"
         />
+      )}
+
+      {isAdmin && (
+        <Block
+          title="LLM Response"
+          data={result.llm_response || result.llmResponse}
+          empty="No LLM response returned"
+        />
+      )}
+
+      {isAdmin && (
+        <Block title="Audit Trail" data={auditTrail} empty="No audit trail returned" />
       )}
     </div>
   );

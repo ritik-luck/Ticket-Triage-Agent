@@ -79,8 +79,24 @@ class MemoryManager:
         )
 
         ticket["guardrail_applied"] = guardrail_applied
+        ticket["guardrail_reason"] = (
+            ticket.get("guardrail_reason")
+            or ticket.get("guardrailReason")
+            or self._extract_guardrail_reason(audit_trail)
+        )
 
         return ticket
+
+    def _extract_guardrail_reason(self, audit_trail: List[str]) -> Optional[str]:
+        if not audit_trail:
+            return None
+
+        for item in audit_trail:
+            text = str(item).strip()
+            if "guardrail" in text.lower():
+                return text
+
+        return None
 
 
 memory_manager = MemoryManager()

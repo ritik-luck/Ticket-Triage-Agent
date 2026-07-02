@@ -3,11 +3,11 @@ from typing import List, Optional
 
 
 class TicketRequest(BaseModel):
-    user_name: str = Field(..., min_length=1)
+    user_name: str 
     user_email: EmailStr
-    department: Optional[str] = None
-    subject: str = Field(..., min_length=1)
-    description: str = Field(..., min_length=1)
+    department: Optional[str] 
+    subject: str 
+    description: str 
 
 
 class TriageResponse(BaseModel):
@@ -20,9 +20,18 @@ class TriageResponse(BaseModel):
     rag_used: bool
     web_search_used: bool
     suggested_solution: List[str]
+    llm_response: Optional[str] = None
+    recommended_action: Optional[str] = None
+    escalation_required: bool = False
+    sla_target_hours: Optional[float] = None
+    sla_response_hours: Optional[float] = None
+    sla_breach_risk: Optional[str] = None
+    sla_escalation_required: bool = False
+    sla_reason: Optional[str] = None
     rag_sources: List[str]
     audit_trail: List[str]
     guardrail_applied: bool = False
+    guardrail_reason: Optional[str] = None
 
 
 class UserTriageResponse(BaseModel):

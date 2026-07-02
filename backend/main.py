@@ -1,6 +1,5 @@
 from fastapi import FastAPI, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
-
 from models import TicketRequest, TriageResponse, UserTriageResponse
 from agent import run_ticket_triage
 from memory.memory_manager import memory_manager
@@ -80,18 +79,16 @@ def get_all_tickets(
             "tickets": tickets
         }
 
-    user_tickets = []
-
-    for ticket in tickets:
-        user_tickets.append(
-            {
-                "ticket_id": ticket.get("ticket_id"),
-                "category": ticket.get("category"),
-                "priority": ticket.get("priority"),
-                "assigned_team": ticket.get("assigned_team"),
-                "suggested_solution": ticket.get("suggested_solution"),
-            }
-        )
+    user_tickets = [
+        {
+            "ticket_id": ticket.get("ticket_id"),
+            "category": ticket.get("category"),
+            "priority": ticket.get("priority"),
+            "assigned_team": ticket.get("assigned_team"),
+            "suggested_solution": ticket.get("suggested_solution"),
+        }
+        for ticket in tickets
+    ]
 
     return {
         "total_tickets": len(user_tickets),
@@ -166,9 +163,7 @@ def get_analytics_tickets(
 
     tickets = memory_manager.get_all_ticket_logs()
 
-    normalized_tickets = []
-
-    for ticket in tickets:
+    def normalize_ticket(ticket):
         audit_trail = ticket.get("audit_trail", [])
 
         if audit_trail is None:
@@ -185,13 +180,32 @@ def get_analytics_tickets(
             or "guardrail applied" in audit_text
         )
 
-        normalized_ticket = {
+        guardrail_reason = (
+            ticket.get("guardrail_reason")
+            or ticket.get("guardrailReason")
+        )
+
+        if not guardrail_reason:
+            for item in audit_trail:
+                if "guardrail" in str(item).lower():
+                    guardrail_reason = str(item)
+                    break
+
+        return {
             **ticket,
             "audit_trail": audit_trail,
             "guardrail_applied": guardrail_applied,
+            "guardrail_reason": guardrail_reason,
+            "sla_target_hours": ticket.get("sla_target_hours") or ticket.get("slaTargetHours"),
+            "sla_response_hours": ticket.get("sla_response_hours") or ticket.get("slaResponseHours"),
+            "sla_breach_risk": ticket.get("sla_breach_risk") or ticket.get("slaBreachRisk"),
+            "sla_escalation_required": ticket.get("sla_escalation_required")
+            if ticket.get("sla_escalation_required") is not None
+            else ticket.get("slaEscalationRequired", False),
+            "sla_reason": ticket.get("sla_reason") or ticket.get("slaReason"),
         }
 
-        normalized_tickets.append(normalized_ticket)
+    normalized_tickets = [normalize_ticket(ticket) for ticket in tickets]
 
     return {
         "total_tickets": len(normalized_tickets),
