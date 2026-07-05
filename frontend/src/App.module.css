@@ -1,0 +1,174 @@
+.page {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.hero {
+  position: relative;
+}
+
+.particlesLayer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.8), rgba(124, 58, 237, 0.14) 55%, transparent 75%);
+  filter: blur(0.5px);
+  opacity: 0.24;
+  animation: floatOrb cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.roleSelector,
+.modeWrap,
+.modeTransition {
+  position: relative;
+  z-index: 1;
+}
+
+.roleSwitch {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.roleToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--text);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.roleActive {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.35), rgba(56, 189, 248, 0.18));
+  border-color: rgba(167, 139, 250, 0.38);
+  box-shadow: 0 18px 40px rgba(124, 58, 237, 0.16);
+}
+
+.intakeSelector {
+  margin-top: 4px;
+}
+
+.toastStack {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  display: grid;
+  gap: 10px;
+  z-index: 80;
+}
+
+.toast {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.28);
+  animation: toastIn 0.28s ease both;
+  backdrop-filter: blur(18px);
+}
+
+.success {
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.error {
+  border-color: rgba(239, 68, 68, 0.32);
+}
+
+.info {
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+.successBurst {
+  position: fixed;
+  inset: auto 50% 18% auto;
+  transform: translateX(50%);
+  display: inline-flex;
+  gap: 12px;
+  color: #fef3c7;
+  z-index: 70;
+  animation: burstOut 1.6s ease forwards;
+}
+
+.revealVisible {
+  animation: revealUp 0.7s cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+
+.hiddenLoad {
+  opacity: 0;
+}
+
+@keyframes revealUp {
+  from {
+    opacity: 0;
+    transform: translateY(26px);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes floatOrb {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.94);
+  }
+  50% {
+    transform: translate3d(24px, -38px, 0) scale(1.14);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(0.94);
+  }
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes burstOut {
+  0% {
+    opacity: 0;
+    transform: translateX(50%) translateY(12px) scale(0.8);
+  }
+  25% {
+    opacity: 1;
+    transform: translateX(50%) translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(50%) translateY(-22px) scale(1.1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .particle,
+  .toast,
+  .successBurst,
+  .revealVisible {
+    animation: none !important;
+  }
+}

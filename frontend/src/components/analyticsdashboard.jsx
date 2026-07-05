@@ -1,6 +1,28 @@
 import React, { useEffect, useMemo, useState } from "react";
+import styles from "./AnalyticsDashboard.module.css";
 
 const API_BASE_URL = "http://localhost:8000";
+
+function AnimatedNumber({ value }) {
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    let frame;
+    const start = performance.now();
+    const duration = 900;
+
+    function tick(now) {
+      const progress = Math.min((now - start) / duration, 1);
+      setCurrent(Math.round(value * progress));
+      if (progress < 1) frame = requestAnimationFrame(tick);
+    }
+
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [value]);
+
+  return <strong className={styles.metricValue}>{current}</strong>;
+}
 
 function AnalyticsDashboard({ refreshKey = 0 }) {
   const [tickets, setTickets] = useState([]);
@@ -46,182 +68,85 @@ function AnalyticsDashboard({ refreshKey = 0 }) {
     fetchAnalytics();
   }, [refreshKey]);
 
-  const getAuditTrail = (ticket) => {
-    return ticket.audit_trail || ticket.auditTrail || ticket.audit || [];
-  };
+  const getAuditTrail = (ticket) => ticket.audit_trail || ticket.auditTrail || ticket.audit || [];
 
   const getAuditText = (ticket) => {
     const auditTrail = getAuditTrail(ticket);
-
-    if (Array.isArray(auditTrail)) {
-      return auditTrail.join(" ").toLowerCase();
-    }
-
-    return String(auditTrail || "").toLowerCase();
+    return Array.isArray(auditTrail) ? auditTrail.join(" ").toLowerCase() : String(auditTrail || "").toLowerCase();
   };
 
   const getGuardrailDescription = (ticket) => {
-    const explicitReason =
-      ticket.guardrail_reason || ticket.guardrailReason || "";
-
-    if (String(explicitReason).trim()) {
-      return String(explicitReason);
-    }
-
+    const explicitReason = ticket.guardrail_reason || ticket.guardrailReason || "";
+    if (String(explicitReason).trim()) return String(explicitReason);
     const auditTrail = getAuditTrail(ticket);
-
     if (Array.isArray(auditTrail)) {
-      const reason = auditTrail.find((item) =>
-        String(item).toLowerCase().includes("guardrail")
-      );
-
+      const reason = auditTrail.find((item) => String(item).toLowerCase().includes("guardrail"));
       return reason || "Guardrail applied";
     }
-
     const auditText = String(auditTrail || "");
-
-    if (auditText.toLowerCase().includes("guardrail")) {
-      return auditText;
-    }
-
-    return "Guardrail applied";
+    return auditText.toLowerCase().includes("guardrail") ? auditText : "Guardrail applied";
   };
 
   const analytics = useMemo(() => {
-    const ragUsedCount = tickets.filter(
-      (ticket) => ticket.rag_used === true || ticket.ragUsed === true
-    ).length;
-
-    const webSearchUsedCount = tickets.filter(
-      (ticket) =>
-        ticket.web_search_used === true || ticket.webSearchUsed === true
-    ).length;
-
+    const ragUsedCount = tickets.filter((ticket) => ticket.rag_used === true || ticket.ragUsed === true).length;
+    const webSearchUsedCount = tickets.filter((ticket) => ticket.web_search_used === true || ticket.webSearchUsed === true).length;
     const guardrailTickets = tickets.filter((ticket) => {
       const auditText = getAuditText(ticket);
-
-      return (
-        ticket.guardrail_applied === true ||
-        ticket.guardrailApplied === true ||
-        auditText.includes("guardrail")
-      );
+      return ticket.guardrail_applied === true || ticket.guardrailApplied === true || auditText.includes("guardrail");
     });
-
     const productionOutageTickets = guardrailTickets.filter((ticket) => {
       const auditText = getAuditText(ticket);
-
-      return (
-        auditText.includes("production outage") ||
-        auditText.includes("production system down") ||
-        auditText.includes("system down") ||
-        auditText.includes("multiple users affected") ||
-        auditText.includes("outage")
-      );
+      return auditText.includes("production outage") || auditText.includes("production system down") || auditText.includes("system down") || auditText.includes("multiple users affected") || auditText.includes("outage");
     });
-
     const securityIncidentTickets = guardrailTickets.filter((ticket) => {
       const auditText = getAuditText(ticket);
-
-      return (
-        auditText.includes("security incident") ||
-        auditText.includes("security") ||
-        auditText.includes("phishing") ||
-        auditText.includes("suspicious login") ||
-        auditText.includes("account compromised")
-      );
+      return auditText.includes("security incident") || auditText.includes("security") || auditText.includes("phishing") || auditText.includes("suspicious login") || auditText.includes("account compromised");
     });
-
     const dataLossTickets = guardrailTickets.filter((ticket) => {
       const auditText = getAuditText(ticket);
-
-      return (
-        auditText.includes("data loss") ||
-        auditText.includes("deleted data") ||
-        auditText.includes("missing data")
-      );
+      return auditText.includes("data loss") || auditText.includes("deleted data") || auditText.includes("missing data");
     });
-
-    const slaTickets = tickets.filter(
-      (ticket) =>
-        ticket.sla_target_hours !== undefined ||
-        ticket.slaTargetHours !== undefined
-    );
-
-    const slaLowRiskTickets = slaTickets.filter((ticket) => {
-      const risk = String(
-        ticket.sla_breach_risk || ticket.slaBreachRisk || ""
-      ).toLowerCase();
-
-      return risk === "low";
-    });
-
-    const slaMediumRiskTickets = slaTickets.filter((ticket) => {
-      const risk = String(
-        ticket.sla_breach_risk || ticket.slaBreachRisk || ""
-      ).toLowerCase();
-
-      return risk === "medium";
-    });
-
-    const slaHighRiskTickets = slaTickets.filter((ticket) => {
-      const risk = String(
-        ticket.sla_breach_risk || ticket.slaBreachRisk || ""
-      ).toLowerCase();
-
-      return risk === "high";
-    });
-
+    const slaTickets = tickets.filter((ticket) => ticket.sla_target_hours !== undefined || ticket.slaTargetHours !== undefined);
+    const slaLowRiskTickets = slaTickets.filter((ticket) => String(ticket.sla_breach_risk || ticket.slaBreachRisk || "").toLowerCase() === "low");
+    const slaMediumRiskTickets = slaTickets.filter((ticket) => String(ticket.sla_breach_risk || ticket.slaBreachRisk || "").toLowerCase() === "medium");
+    const slaHighRiskTickets = slaTickets.filter((ticket) => String(ticket.sla_breach_risk || ticket.slaBreachRisk || "").toLowerCase() === "high");
     return {
       totalTicketCount: tickets.length,
       ragUsedCount,
       webSearchUsedCount,
-      guardrailCount:
-        productionOutageTickets.length +
-        securityIncidentTickets.length +
-        dataLossTickets.length,
+      guardrailCount: productionOutageTickets.length + securityIncidentTickets.length + dataLossTickets.length,
       guardrailTotalCount: guardrailTickets.length,
       productionOutageCount: productionOutageTickets.length,
       securityIncidentCount: securityIncidentTickets.length,
       dataLossCount: dataLossTickets.length,
-      slaTicketCount:
-        slaLowRiskTickets.length +
-        slaMediumRiskTickets.length +
-        slaHighRiskTickets.length,
+      slaTicketCount: slaLowRiskTickets.length + slaMediumRiskTickets.length + slaHighRiskTickets.length,
       slaTotalCount: slaTickets.length,
       slaLowRiskCount: slaLowRiskTickets.length,
       slaMediumRiskCount: slaMediumRiskTickets.length,
       slaHighRiskCount: slaHighRiskTickets.length,
-      latestGuardrailDescription: guardrailTickets.length
-        ? getGuardrailDescription(guardrailTickets[guardrailTickets.length - 1])
-        : "",
-      latestSlaDescription: slaTickets.length
-        ? getSlaDescription(slaTickets[slaTickets.length - 1])
-        : "",
+      latestGuardrailDescription: guardrailTickets.length ? getGuardrailDescription(guardrailTickets[guardrailTickets.length - 1]) : "",
+      latestSlaDescription: slaTickets.length ? getSlaDescription(slaTickets[slaTickets.length - 1]) : "",
     };
   }, [tickets]);
 
   function getSlaDescription(ticket) {
     const reason = ticket.sla_reason || ticket.slaReason || "";
-
-    if (String(reason).trim()) {
-      return String(reason);
-    }
-
+    if (String(reason).trim()) return String(reason);
     const target = ticket.sla_target_hours || ticket.slaTargetHours;
     const risk = ticket.sla_breach_risk || ticket.slaBreachRisk;
-
-    if (target) {
-      return `SLA target is ${target} hours with ${risk || "unknown"} breach risk.`;
-    }
-
+    if (target) return `SLA target is ${target} hours with ${risk || "unknown"} breach risk.`;
     return "SLA was calculated.";
   }
 
   if (loading) {
     return (
       <section className="analytics-dashboard">
-        <h2>Analytics Dashboard</h2>
-        <p>Loading analytics...</p>
+        <div className={styles.loadingSkeleton}>
+          <div className={styles.skLine} />
+          <div className={styles.skCard} />
+          <div className={styles.skCard} />
+          <div className={styles.skCard} />
+        </div>
       </section>
     );
   }
@@ -242,27 +167,21 @@ function AnalyticsDashboard({ refreshKey = 0 }) {
           <h2>Analytics Dashboard</h2>
         </div>
       </div>
-
       <div className="analytics-grid">
-        <div className="analytics-card">
+        <div className={`analytics-card ${styles.metricCard}`}>
           <span className="analytics-label">Total Tickets</span>
-          <strong>{analytics.totalTicketCount}</strong>
+          <AnimatedNumber value={analytics.totalTicketCount} />
         </div>
-
-        <div className="analytics-card">
+        <div className={`analytics-card ${styles.metricCard}`}>
           <span className="analytics-label">Internal Search Used</span>
-          <strong>{analytics.ragUsedCount}</strong>
+          <AnimatedNumber value={analytics.ragUsedCount} />
         </div>
-
-        <div className="analytics-card">
+        <div className={`analytics-card ${styles.metricCard}`}>
           <span className="analytics-label">Web Search Used</span>
-          <strong>{analytics.webSearchUsedCount}</strong>
+          <AnimatedNumber value={analytics.webSearchUsedCount} />
         </div>
-
         <div
-          className={`analytics-card guardrail-card guardrail-toggle-card ${
-            analytics.slaTicketCount > 0 ? "guardrail-active" : ""
-          }`}
+          className={`analytics-card guardrail-card guardrail-toggle-card ${analytics.slaTicketCount > 0 ? "guardrail-active" : ""}`}
           role="button"
           tabIndex={0}
           onClick={() => setShowSlaBreakdown((prev) => !prev)}
@@ -274,13 +193,10 @@ function AnalyticsDashboard({ refreshKey = 0 }) {
           }}
         >
           <span className="analytics-label">SLA</span>
-          <strong>{analytics.slaTicketCount}</strong>
+          <AnimatedNumber value={analytics.slaTicketCount} />
         </div>
-
         <div
-          className={`analytics-card guardrail-card guardrail-toggle-card ${
-            analytics.guardrailCount > 0 ? "guardrail-active" : ""
-          }`}
+          className={`analytics-card guardrail-card guardrail-toggle-card ${analytics.guardrailCount > 0 ? "guardrail-active" : ""}`}
           role="button"
           tabIndex={0}
           onClick={() => setShowGuardrailBreakdown((prev) => !prev)}
@@ -292,7 +208,7 @@ function AnalyticsDashboard({ refreshKey = 0 }) {
           }}
         >
           <span className="analytics-label">Guardrail</span>
-          <strong>{analytics.guardrailCount}</strong>
+          <AnimatedNumber value={analytics.guardrailCount} />
         </div>
       </div>
 

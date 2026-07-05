@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
+import styles from "./AdminTicketViewer.module.css";
 
 const PAGE_SIZE = 5;
 
@@ -21,26 +22,20 @@ function AdminTicketViewer({ userRole }) {
       headers: { "x-user-role": userRole },
     });
     const data = await res.json();
-    setTickets(data.tickets || []);
-    setFiltered(data.tickets || []);
+    const orderedTickets = Array.isArray(data.tickets) ? [...data.tickets].reverse() : [];
+    setTickets(orderedTickets);
+    setFiltered(orderedTickets);
   };
 
   useEffect(() => {
     let data = tickets;
 
     if (search) {
-      data = data.filter((t) =>
-        t.ticket_id.toLowerCase().includes(search.toLowerCase())
-      );
+      data = data.filter((t) => t.ticket_id.toLowerCase().includes(search.toLowerCase()));
     }
 
-    if (categoryFilter) {
-      data = data.filter((t) => t.category === categoryFilter);
-    }
-
-    if (priorityFilter) {
-      data = data.filter((t) => t.priority === priorityFilter);
-    }
+    if (categoryFilter) data = data.filter((t) => t.category === categoryFilter);
+    if (priorityFilter) data = data.filter((t) => t.priority === priorityFilter);
 
     setFiltered(data);
     setPage(1);
@@ -102,20 +97,17 @@ function AdminTicketViewer({ userRole }) {
           {pageTickets.length === 0 ? (
             <div className="empty-state small">No tickets match the current filters.</div>
           ) : (
-            pageTickets.map((ticket) => (
+            pageTickets.map((ticket, index) => (
               <div
                 key={ticket.ticket_id}
-                className="ticket-card"
+                className={`ticket-card ${styles.ticketCard}`}
+                style={{ animationDelay: `${index * 60}ms` }}
                 onClick={() => fetchTicketById(ticket.ticket_id)}
               >
                 <div className="ticket-card-title">{ticket.ticket_id}</div>
                 <div className="ticket-card-meta">
                   {ticket.category && <span>{ticket.category}</span>}
-                  {ticket.priority && (
-                    <span className={`pill ${ticket.priority.toLowerCase()}`}>
-                      {ticket.priority}
-                    </span>
-                  )}
+                  {ticket.priority && <span className={`pill ${ticket.priority.toLowerCase()}`}>{ticket.priority}</span>}
                 </div>
               </div>
             ))
@@ -125,18 +117,18 @@ function AdminTicketViewer({ userRole }) {
             <button disabled={page === 1} onClick={() => setPage(page - 1)}>
               <ChevronLeft size={16} />
             </button>
-            <span>{page} / {totalPages || 1}</span>
+            <span>
+              {page} / {totalPages || 1}
+            </span>
             <button disabled={page === totalPages || totalPages === 0} onClick={() => setPage(page + 1)}>
               <ChevronRight size={16} />
             </button>
           </div>
         </div>
 
-        <div className="ticket-details ticket-details-card">
+        <div className={`ticket-details ticket-details-card ${styles.detailsShell}`}>
           {!selected ? (
-            <div className="empty-state">
-              Select a ticket to inspect the audit trail and suggested solution.
-            </div>
+            <div className="empty-state">Select a ticket to inspect the audit trail and suggested solution.</div>
           ) : (
             <>
               <div className="ticket-details-header">
@@ -144,11 +136,7 @@ function AdminTicketViewer({ userRole }) {
                   <p className="section-label">Details</p>
                   <h3>{selected.ticket_id}</h3>
                 </div>
-                {selected.priority && (
-                  <span className={`pill ${selected.priority.toLowerCase()}`}>
-                    {selected.priority}
-                  </span>
-                )}
+                {selected.priority && <span className={`pill ${selected.priority.toLowerCase()}`}>{selected.priority}</span>}
               </div>
 
               <div className="info-grid admin-info-grid">
@@ -175,14 +163,28 @@ function AdminTicketViewer({ userRole }) {
                 <h4>Audit Trail</h4>
                 <div className="audit-box">
                   {selected.audit_trail?.length ? (
-                    selected.audit_trail.map((log, index) => (
-                      <p key={index}>{log}</p>
-                    ))
+                    selected.audit_trail.map((log, index) => <p key={index}>{log}</p>)
                   ) : (
                     <p className="hint">No audit entries available.</p>
                   )}
                 </div>
               </div>
+
+              {selected.similar_tickets?.length ? (
+                <div className="section section-card">
+                  <h4>Similar Tickets</h4>
+                  <div className="similar-ticket-stack">
+                    {selected.similar_tickets.map((ticket) => (
+                      <div key={ticket.ticket_id} className="similar-ticket-item">
+                        <strong>{ticket.ticket_id}</strong>
+                        <span>{ticket.category || "Category not returned"}</span>
+                        <span>{ticket.assigned_team || "Team not returned"}</span>
+                        <span>Similarity {ticket.score}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
             </>
           )}
         </div>

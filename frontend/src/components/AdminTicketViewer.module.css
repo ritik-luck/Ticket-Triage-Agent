@@ -1,0 +1,5 @@
+.ticketCard { transform: translateY(8px); opacity: 0; animation: riseIn .55s ease forwards; }
+.ticketCard:nth-child(2n) { animation-delay: .05s; }
+.ticketCard:nth-child(3n) { animation-delay: .1s; }
+.detailsShell { position: relative; overflow:hidden; }
+@keyframes riseIn { to { transform: translateY(0); opacity: 1; } }

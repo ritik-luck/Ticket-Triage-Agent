@@ -1,4 +1,5 @@
 import { useState } from "react";
+import styles from "./TicketForm.module.css";
 
 const defaultTicket = {
   user_name: "",
@@ -22,15 +23,15 @@ export default function TicketForm({ onSubmit, loading }) {
   }
 
   return (
-    <div className="card form-card">
-      <div className="card-header">
+    <div className={`card ${styles.formCard}`}>
+      <div className={styles.cardHeader}>
         <p className="section-label">Input</p>
         <h2>Submit Ticket</h2>
       </div>
 
-      <form className="form" onSubmit={submitForm}>
-        <div className="form-grid">
-          <label>
+      <form className={styles.form} onSubmit={submitForm}>
+        <div className={styles.formGrid}>
+          <label className={styles.label}>
             <span>User Name</span>
             <input
               name="user_name"
@@ -41,7 +42,7 @@ export default function TicketForm({ onSubmit, loading }) {
             />
           </label>
 
-          <label>
+          <label className={styles.label}>
             <span>User Email</span>
             <input
               name="user_email"
@@ -53,7 +54,7 @@ export default function TicketForm({ onSubmit, loading }) {
             />
           </label>
 
-          <label>
+          <label className={styles.label}>
             <span>Department</span>
             <input
               name="department"
@@ -63,7 +64,7 @@ export default function TicketForm({ onSubmit, loading }) {
             />
           </label>
 
-          <label>
+          <label className={styles.label}>
             <span>Subject</span>
             <input
               name="subject"
@@ -74,7 +75,7 @@ export default function TicketForm({ onSubmit, loading }) {
             />
           </label>
 
-          <label className="full-width">
+          <label className={`${styles.label} ${styles.fullWidth}`}>
             <span>Description</span>
             <textarea
               name="description"
@@ -86,7 +87,7 @@ export default function TicketForm({ onSubmit, loading }) {
           </label>
         </div>
 
-        <div className="form-footer">
+        <div className={styles.formFooter}>
           <button disabled={loading} type="submit" className="primary-button">
             {loading ? "Triaging..." : "Submit Ticket"}
           </button>

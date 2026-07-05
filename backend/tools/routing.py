@@ -2,6 +2,18 @@ def route_ticket(category: str, ticket_text: str) -> str:
     text = ticket_text.lower()
     category = category.strip()
 
+    if any(keyword in text for keyword in [
+        "project allocation",
+        "no project allocation",
+        "no project allocated",
+        "not assigned to any project",
+        "unassigned",
+        "bench",
+        "allocation",
+        "assigned project"
+    ]):
+        return "Project Management Team"
+
     if category == "Production Outage":
         return "Incident Response Team"
 
@@ -30,6 +42,18 @@ def route_ticket(category: str, ticket_text: str) -> str:
         return "Software Support Team"
 
     if category == "Service Request":
+        if any(keyword in text for keyword in [
+            "project allocation",
+            "no project allocation",
+            "no project allocated",
+            "not assigned to any project",
+            "unassigned",
+            "bench",
+            "allocation",
+            "assigned project"
+        ]):
+            return "Project Management Team"
+
         if any(keyword in text for keyword in [
             "software",
             "install",

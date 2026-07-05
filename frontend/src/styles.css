@@ -1498,3 +1498,238 @@ select:hover {
   }
 }
 
+.chat-intake-card {
+  gap: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-thread {
+  gap: 12px;
+  display: grid;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.chat-bubble {
+  border: 1px solid #94a3b820;
+  border-radius: 18px;
+  padding: 14px 16px;
+  background: #ffffff0d;
+}
+
+.chat-bubble.assistant {
+  background: linear-gradient(135deg, #7c3aed26, #ffffff09);
+}
+
+.chat-bubble.user {
+  background: #38bdf81f;
+  margin-left: 18px;
+}
+
+.chat-bubble-role {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-size: 11px;
+  font-weight: 800;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.chat-bubble p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.chat-form {
+  gap: 12px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.result-stage-stack {
+  display: grid;
+  gap: 18px;
+  animation: stageFadeIn 0.45s ease both;
+}
+
+.pipeline-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 560px;
+  padding: 28px;
+  background:
+    linear-gradient(180deg, rgba(8, 15, 30, 0.96), rgba(15, 23, 42, 0.92));
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  backdrop-filter: blur(22px) saturate(1.2);
+}
+
+.pipeline-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top right, rgba(56, 189, 248, 0.16), transparent 24%),
+    radial-gradient(circle at bottom left, rgba(124, 58, 237, 0.24), transparent 30%);
+  pointer-events: none;
+}
+
+.pipeline-header {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.pipeline-header h2 {
+  margin: 0;
+  color: var(--text-strong);
+  font-size: 30px;
+}
+
+.pipeline-pulse {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--info);
+  box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.45);
+  animation: pulseRing 1.8s infinite;
+}
+
+.pipeline-track {
+  position: relative;
+  display: grid;
+  gap: 14px;
+}
+
+.pipeline-track::before {
+  content: "";
+  position: absolute;
+  left: 24px;
+  top: 22px;
+  bottom: 22px;
+  width: 2px;
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.2), rgba(124, 58, 237, 0.45));
+}
+
+.pipeline-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  padding: 16px 18px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  opacity: 0.42;
+  transform: translateY(10px) scale(0.99);
+  transition: opacity 0.28s ease, transform 0.28s ease, border-color 0.28s ease,
+    background 0.28s ease, box-shadow 0.28s ease;
+  animation: stepReveal 0.5s ease both;
+  animation-delay: var(--delay);
+}
+
+.pipeline-step.complete {
+  opacity: 1;
+  background: rgba(56, 189, 248, 0.08);
+  border-color: rgba(56, 189, 248, 0.28);
+}
+
+.pipeline-step.active {
+  opacity: 1;
+  transform: translateY(0) scale(1.01);
+  background: rgba(124, 58, 237, 0.18);
+  border-color: rgba(167, 139, 250, 0.5);
+  box-shadow: 0 18px 46px rgba(124, 58, 237, 0.14);
+}
+
+.pipeline-step-node {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: var(--muted);
+  font-weight: 900;
+  position: relative;
+  z-index: 1;
+}
+
+.pipeline-step.complete .pipeline-step-node {
+  color: #dbeafe;
+  border-color: rgba(56, 189, 248, 0.42);
+  background: rgba(8, 47, 73, 0.92);
+}
+
+.pipeline-step.active .pipeline-step-node {
+  color: white;
+  background: linear-gradient(135deg, #7c3aed, #38bdf8);
+  border-color: transparent;
+}
+
+.pipeline-step-copy strong {
+  display: block;
+  color: var(--text-strong);
+  font-size: 1.02rem;
+  margin-bottom: 4px;
+}
+
+.pipeline-step-copy p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.result-panel-enter {
+  opacity: 0;
+  transform: translateY(16px) scale(0.992);
+  filter: blur(3px);
+  transition: opacity 0.55s ease, transform 0.55s ease, filter 0.55s ease;
+}
+
+.result-panel-enter.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
+
+@keyframes stepReveal {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(10px) scale(0.99);
+  }
+}
+
+@keyframes pulseRing {
+  0% {
+    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.35);
+  }
+  70% {
+    box-shadow: 0 0 0 16px rgba(56, 189, 248, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0);
+  }
+}
+
+@keyframes stageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

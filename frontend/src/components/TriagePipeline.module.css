@@ -1,0 +1,99 @@
+.pipelineCard {
+  position: relative;
+  overflow: hidden;
+  min-height: 560px;
+  padding: 28px;
+  background: linear-gradient(180deg, rgba(8, 15, 30, 0.96), rgba(15, 23, 42, 0.92));
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  backdrop-filter: blur(22px) saturate(1.2);
+}
+
+.pipelineHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.pipelineTrack {
+  position: relative;
+  display: grid;
+  gap: 14px;
+}
+
+.pipelinePulse {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--info);
+  box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.45);
+  animation: pulseRing 1.8s infinite;
+}
+
+.pipelineTrack::before {
+  content: "";
+  position: absolute;
+  left: 24px;
+  top: 22px;
+  bottom: 22px;
+  width: 2px;
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.2), rgba(124, 58, 237, 0.45));
+}
+
+.pipelineStepNode {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: var(--muted);
+  font-weight: 900;
+  position: relative;
+  z-index: 1;
+}
+
+.complete .pipelineStepNode {
+  color: #dbeafe;
+  border-color: rgba(56, 189, 248, 0.42);
+  background: rgba(8, 47, 73, 0.92);
+}
+
+.active .pipelineStepNode {
+  color: white;
+  background: linear-gradient(135deg, #7c3aed, #38bdf8);
+  border-color: transparent;
+}
+
+.pipelineStepCopy strong {
+  display: block;
+  color: var(--text-strong);
+  font-size: 1.02rem;
+  margin-bottom: 4px;
+}
+
+.pipelineStepCopy p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.resultStageStack {
+  display: grid;
+  gap: 18px;
+  animation: stageFadeIn 0.45s ease both;
+}
+
+.resultPanelEnter {
+  opacity: 0;
+  transform: translateY(16px) scale(0.992);
+  filter: blur(3px);
+  transition: opacity 0.55s ease, transform 0.55s ease, filter 0.55s ease;
+}
+
+.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}

@@ -1,15 +1,24 @@
 import uuid
+import asyncio
 from typing import List, Dict, Any, Optional
 from models import TicketRequest, TriageResponse
+from utils.logger import get_logger
 from rag.augmentation import augmentation_manager
+from rag.embeddings import embedding_manager
 from tools.classification import classify_ticket
-from tools.priority import detect_priority, is_escalation_required
+from tools.priority import detect_priority
 from tools.routing import route_ticket
-from tools.response import generate_final_response
 from tools.web_search import web_search_fallback
 from tools.sla import predict_sla
 from memory.memory_manager import memory_manager
 from tools.guadrails import apply_guardrails
+from sentence_transformers.util import cos_sim
+
+
+logger = get_logger(__name__)
+CACHE_SIMILARITY_THRESHOLD = 0.75
+SIMILAR_TICKET_THRESHOLD = 0.55
+LOW_CONFIDENCE_THRESHOLD = 0.60
 
 
 def build_issue_text(request: TicketRequest) -> str:
@@ -21,39 +30,111 @@ def build_issue_text(request: TicketRequest) -> str:
     return issue_text.strip()
 
 
-def build_full_ticket_text(request: TicketRequest) -> str:
-    full_ticket_text = f"""
-    Subject: {request.subject}
-    Description: {request.description}
-    User Name: {request.user_name}
-    User Email: {request.user_email}
-    Department: {request.department}
-    """
-
-    return full_ticket_text.strip()
-
-
 def find_cached_ticket(issue_text: str) -> Optional[Dict[str, Any]]:
     past_tickets = memory_manager.get_all_ticket_logs()
+    if not past_tickets:
+        return None
 
-    normalized_issue_text = issue_text.lower().strip()
+    if not getattr(embedding_manager, "model", None):
+        logger.info("Embedding model unavailable; cache similarity lookup skipped.")
+        return None
+
+    issue_embedding = embedding_manager.generate_embeddings([issue_text])[0]
+    best_match = None
+    best_score = 0.0
 
     for ticket in reversed(past_tickets):
-        ticket_subject = str(ticket.get("subject", "")).lower()
-        ticket_description = str(ticket.get("description", "")).lower()
+        ticket_subject = str(ticket.get("subject", "")).strip()
+        ticket_description = str(ticket.get("description", "")).strip()
         suggested_solution = ticket.get("suggested_solution", [])
 
         if not isinstance(suggested_solution, list):
             suggested_solution = [str(suggested_solution)]
 
-        solution_text = " ".join(str(item) for item in suggested_solution).lower()
+        solution_text = " ".join(str(item).strip() for item in suggested_solution if str(item).strip())
+        candidate_text = " ".join(
+            part for part in [ticket_subject, ticket_description, solution_text] if part
+        ).strip()
 
-        existing_text = f"{ticket_subject} {ticket_description} {solution_text}".strip()
+        if not candidate_text:
+            continue
 
-        if existing_text and normalized_issue_text in existing_text:
-            return ticket
+        candidate_embedding = embedding_manager.generate_embeddings([candidate_text])[0]
+        score = float(cos_sim([issue_embedding], [candidate_embedding])[0][0])
+
+        if score > best_score:
+            best_score = score
+            best_match = ticket
+
+    if best_match and best_score >= CACHE_SIMILARITY_THRESHOLD:
+        logger.info(
+            "Cache hit found with semantic similarity %.3f for ticket %s",
+            best_score,
+            best_match.get("ticket_id", "unknown"),
+        )
+        return best_match
+
+    logger.info("No cache hit above similarity threshold %.2f", CACHE_SIMILARITY_THRESHOLD)
 
     return None
+
+
+def find_similar_tickets(issue_text: str, limit: int = 3) -> List[Dict[str, Any]]:
+    past_tickets = memory_manager.get_all_ticket_logs()
+    if not past_tickets:
+        return []
+
+    if not getattr(embedding_manager, "model", None):
+        logger.info("Embedding model unavailable; similar ticket lookup skipped.")
+        return []
+
+    issue_embedding = embedding_manager.generate_embeddings([issue_text])[0]
+    matches = []
+    scored_tickets = []
+
+    for ticket in reversed(past_tickets):
+        ticket_subject = str(ticket.get("subject", "")).strip()
+        ticket_description = str(ticket.get("description", "")).strip()
+        suggested_solution = ticket.get("suggested_solution", [])
+
+        if not isinstance(suggested_solution, list):
+            suggested_solution = [str(suggested_solution)]
+
+        solution_text = " ".join(str(item).strip() for item in suggested_solution if str(item).strip())
+        candidate_text = " ".join(
+            part for part in [ticket_subject, ticket_description, solution_text] if part
+        ).strip()
+
+        if not candidate_text:
+            continue
+
+        candidate_embedding = embedding_manager.generate_embeddings([candidate_text])[0]
+        score = float(cos_sim([issue_embedding], [candidate_embedding])[0][0])
+
+        similar_solution = ticket.get("suggested_solution", [])
+        if not isinstance(similar_solution, list):
+            similar_solution = [str(similar_solution)]
+
+        candidate = {
+            "ticket_id": ticket.get("ticket_id", "unknown"),
+            "category": ticket.get("category", ""),
+            "priority": ticket.get("priority", ""),
+            "assigned_team": ticket.get("assigned_team", ""),
+            "score": round(score, 3),
+            "suggested_solution": [
+                str(item) for item in similar_solution if str(item).strip()
+            ],
+        }
+        scored_tickets.append(candidate)
+
+        if score >= SIMILAR_TICKET_THRESHOLD:
+            matches.append(candidate)
+
+    if not matches and scored_tickets:
+        matches = scored_tickets
+
+    matches.sort(key=lambda item: item["score"], reverse=True)
+    return matches[:limit]
 
 
 def convert_web_answer_to_steps(answer: str) -> List[str]:
@@ -118,6 +199,48 @@ def calculate_confidence(
     return 0.50
 
 
+def build_confidence_reason(rag_used: bool, web_search_used: bool, similar_tickets: List[Dict[str, Any]]) -> str:
+    if similar_tickets:
+        top = similar_tickets[0]
+        return (
+            f"Matched a similar historical ticket ({top.get('ticket_id', 'unknown')}) "
+            f"with similarity {top.get('score', 0):.2f}."
+        )
+
+    if rag_used:
+        return "Confidence came from an internal knowledge base match."
+
+    if web_search_used:
+        return "Confidence came from the web fallback response."
+
+    return "Confidence was estimated from model routing signals."
+
+
+def build_clarifying_question(
+    confidence: float,
+    category: str,
+    assigned_team: str,
+    similar_tickets: List[Dict[str, Any]]
+) -> Optional[str]:
+    if confidence >= LOW_CONFIDENCE_THRESHOLD:
+        return None
+
+    if similar_tickets:
+        top = similar_tickets[0]
+        return (
+            f"I found a close match to {top.get('ticket_id', 'a past ticket')}. "
+            f"Can you confirm whether your issue is similar to that {top.get('category', 'related')} case?"
+        )
+
+    if category or assigned_team:
+        return (
+            f"To confirm the routing, can you share one more detail about the issue before we finalize "
+            f"the {category or 'ticket'} assignment to {assigned_team or 'the support team'}?"
+        )
+
+    return "Can you share one more detail about the issue so I can route it more accurately?"
+
+
 def run_ticket_triage(request: TicketRequest) -> TriageResponse:
     audit_trail = []
 
@@ -125,8 +248,6 @@ def run_ticket_triage(request: TicketRequest) -> TriageResponse:
     audit_trail.append(f"Ticket created with ID: {ticket_id}")
 
     issue_text = build_issue_text(request)
-    full_ticket_text = build_full_ticket_text(request)
-
     cached_ticket = find_cached_ticket(issue_text)
 
     if cached_ticket:
@@ -151,6 +272,14 @@ def run_ticket_triage(request: TicketRequest) -> TriageResponse:
         return TriageResponse(**cached_ticket)
 
     audit_trail.append("Ticket text prepared successfully.")
+    similar_tickets = find_similar_tickets(issue_text)
+    if similar_tickets:
+        audit_trail.append(
+            "Similar historical tickets detected: "
+            + ", ".join(
+                f"{ticket['ticket_id']} ({ticket['score']:.2f})" for ticket in similar_tickets
+            )
+        )
 
     try:
         rag_result = augmentation_manager.build_augmented_context(issue_text)
@@ -278,12 +407,28 @@ def run_ticket_triage(request: TicketRequest) -> TriageResponse:
         rag_score=rag_score,
         web_search_used=web_search_used
     )
+    confidence_reason = build_confidence_reason(rag_used, web_search_used, similar_tickets)
+    clarifying_question = build_clarifying_question(confidence, category, assigned_team, similar_tickets)
     audit_trail.append(f"Final confidence calculated as: {confidence}")
+    audit_trail.append(confidence_reason)
+    if clarifying_question:
+        audit_trail.append(f"Clarifying question generated: {clarifying_question}")
 
-    escalation_required = is_escalation_required(
-        priority=priority,
-        ticket_text=decision_context
-    )
+    escalation_required = priority in ["Critical", "High"]
+    human_review_required = confidence < LOW_CONFIDENCE_THRESHOLD or guardrail_applied or bool(similar_tickets)
+    human_review_reason = None
+
+    if human_review_required:
+        if confidence < LOW_CONFIDENCE_THRESHOLD:
+            human_review_reason = (
+                f"Low confidence ({confidence:.2f}) - recommend human review before final routing."
+            )
+        elif guardrail_applied:
+            human_review_reason = "Guardrail triggered - human review recommended."
+        else:
+            human_review_reason = "Similar ticket match available - human approval can confirm the route."
+
+        audit_trail.append(human_review_reason)
 
     sla_result = predict_sla(
         category=category,
@@ -294,21 +439,14 @@ def run_ticket_triage(request: TicketRequest) -> TriageResponse:
     )
     audit_trail.append(sla_result["sla_reason"])
 
-    final_response = generate_final_response(
-        ticket_text=full_ticket_text,
-        category=category,
-        priority=priority,
-        assigned_team=assigned_team,
-        escalation_required=escalation_required,
-        rag_context=retrieved_context,
-        fallback_response=llm_response
-    )
-    recommended_action = final_response.get("recommended_action")
-
     response = TriageResponse(
         ticket_id=ticket_id,
         category=category,
         confidence=confidence,
+        confidence_reason=confidence_reason,
+        human_review_required=human_review_required,
+        human_review_reason=human_review_reason,
+        clarifying_question=clarifying_question,
         priority=priority,
         assigned_team=assigned_team,
         rag_used=rag_used,
@@ -316,8 +454,8 @@ def run_ticket_triage(request: TicketRequest) -> TriageResponse:
         rag_sources=rag_sources,
         web_search_used=web_search_used,
         suggested_solution=suggested_solution,
+        similar_tickets=similar_tickets,
         llm_response=llm_response,
-        recommended_action=recommended_action,
         escalation_required=escalation_required,
         sla_target_hours=sla_result.get("sla_target_hours"),
         sla_response_hours=sla_result.get("sla_response_hours"),
@@ -332,3 +470,7 @@ def run_ticket_triage(request: TicketRequest) -> TriageResponse:
     memory_manager.save_ticket_log(response.model_dump())
 
     return response
+
+
+async def run_ticket_triage_async(request: TicketRequest) -> TriageResponse:
+    return await asyncio.to_thread(run_ticket_triage, request)

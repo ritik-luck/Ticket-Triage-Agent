@@ -41,6 +41,18 @@ def _keyword_classify_ticket(ticket_text: str) -> Dict[str, Any]:
         return {"category": "Security Incident", "confidence": 1.0, "source": "rule_based_fallback"}
 
     if any(keyword in text for keyword in [
+        "project allocation",
+        "no project allocation",
+        "no project allocated",
+        "not assigned to any project",
+        "unassigned",
+        "bench",
+        "allocation",
+        "assigned project",
+    ]):
+        return {"category": "Service Request", "confidence": 1.0, "source": "rule_based_fallback"}
+
+    if any(keyword in text for keyword in [
         "login",
         "password",
         "access",

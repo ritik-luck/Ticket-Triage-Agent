@@ -1,9 +1,16 @@
 from fastapi import FastAPI, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
-from models import TicketRequest, TriageResponse, UserTriageResponse
-from agent import run_ticket_triage
+from models import (
+    TicketRequest,
+    TriageResponse,
+    UserTriageResponse,
+    ChatMessageRequest,
+    ChatIntakeResponse,
+)
+from agent import run_ticket_triage_async
 from memory.memory_manager import memory_manager
 from memory.analytics_manager import analytics_manager
+from chat.intake import chat_intake_manager
 
 
 app = FastAPI(title="Ticket Triage Agent API")
@@ -29,6 +36,7 @@ def build_user_response(response: TriageResponse) -> UserTriageResponse:
         priority=response.priority,
         assigned_team=response.assigned_team,
         suggested_solution=response.suggested_solution,
+        similar_tickets=response.similar_tickets,
     )
 
 
@@ -48,12 +56,12 @@ def health_check():
 
 
 @app.post("/triage")
-def triage_ticket(
+async def triage_ticket(
     request: TicketRequest,
     x_user_role: str = Header(default="user")
 ):
     try:
-        response = run_ticket_triage(request)
+        response = await run_ticket_triage_async(request)
 
         if is_admin_role(x_user_role):
             return response
@@ -64,6 +72,17 @@ def triage_ticket(
         raise HTTPException(
             status_code=500,
             detail=f"Ticket triage failed: {str(error)}"
+        )
+
+
+@app.post("/chat/intake", response_model=ChatIntakeResponse)
+async def chat_intake(request: ChatMessageRequest):
+    try:
+        return chat_intake_manager.start_or_continue(request)
+    except Exception as error:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Chat intake failed: {str(error)}"
         )
 
 
@@ -86,6 +105,7 @@ def get_all_tickets(
             "priority": ticket.get("priority"),
             "assigned_team": ticket.get("assigned_team"),
             "suggested_solution": ticket.get("suggested_solution"),
+            "similar_tickets": ticket.get("similar_tickets", []),
         }
         for ticket in tickets
     ]
@@ -118,6 +138,7 @@ def get_ticket(
         "priority": ticket.get("priority"),
         "assigned_team": ticket.get("assigned_team"),
         "suggested_solution": ticket.get("suggested_solution"),
+        "similar_tickets": ticket.get("similar_tickets", []),
     }
 
 

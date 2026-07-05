@@ -1,0 +1,9 @@
+.dashboardShell { padding: 24px; }
+.metricValue { display:block; margin-top:8px; font-size:32px; font-weight:900; color:var(--text-strong); }
+.metricCard { position:relative; overflow:hidden; }
+.metricCard::after { content:""; position:absolute; inset:-40% auto auto -20%; width:120px; height:120px; border-radius:999px; background:radial-gradient(circle, rgba(56,189,248,.18), transparent 70%); }
+.loadingSkeleton { min-height: 320px; display:grid; gap:14px; }
+.skLine,.skCard{background:linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.12), rgba(255,255,255,.05)); background-size:200% 100%; animation:shimmer 1.5s infinite linear; border-radius:16px;}
+.skLine{height:18px}
+.skCard{height:96px}
+@keyframes shimmer { to { background-position: -200% 0; } }

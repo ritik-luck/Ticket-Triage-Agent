@@ -1,0 +1,29 @@
+.workflowCard {
+  padding: 24px;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.workflowIcon {
+  width: 50px;
+  height: 50px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: rgba(124, 58, 237, 0.18);
+  color: #c4b5fd;
+}
+
+.workflowTitle {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--text-strong);
+}
+
+.workflowText {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
