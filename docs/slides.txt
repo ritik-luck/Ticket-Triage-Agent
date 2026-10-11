@@ -1,0 +1,173 @@
+Slide 1 — Title (10 sec)
+
+"Good morning everyone. Today I'll walk you through my project — the AI Ticket Triage Agent — a hands-on implementation of an AI-assisted support workflow."
+
+
+Slide 2 — Why This Use Case Is Needed (15 sec)
+
+"Support tickets today arrive as unstructured text, manual triage causes delay, and critical issues get lost in the queue. AI fits here because ticket patterns repeat, knowledge can be reused, and decisions can be standardized."
+
+
+Slide 3 — Real-World Industry Alignment (10 sec)
+
+"This isn't just a demo idea — ServiceNow, Microsoft, Jira, and Moveworks are already building the same pattern. My project reflects that same direction at a hands-on level."
+
+
+Slide 4 — Big Picture Before Coding (10 sec)
+
+"Before writing code, I defined the business problem clearly and set the goal: build an AI-assisted first-level triage agent that classifies, prioritizes, retrieves knowledge, and routes — with production thinking from day one."
+
+
+Slide 5 — Who Will Use It (5 sec)
+
+"Two users — the employee raising the ticket and the admin reviewing analytics and audit."
+
+
+Slide 6 — Solution Overview (10 sec)
+
+"The solution has four building blocks — ticket intake, RAG search, decision tools, and admin audit."
+
+
+Slide 7 — Agent Architecture Layers (15 sec)
+
+"The stack is layered — React on top, FastAPI for API, then the Agent orchestrates RAG, tools, guardrails, memory, and analytics. The frontend has zero AI logic — cleanly separated."
+
+
+Slide 8 — Core Components (10 sec)
+
+"Frontend has TicketForm, ResultPanel, and admin components. The Agent internally orchestrates cache, RAG, tools, guardrails, SLA, and memory."
+
+
+Slide 9 — RAG Flow (15 sec)
+
+"For knowledge grounding, I built a real RAG pipeline — CSV to loader, chunking, embeddings, ChromaDB, retriever, context injection, and Groq LLM generates the answer."
+
+
+Slide 10 — Why RAG (10 sec)
+
+"Why RAG? Because LLMs alone hallucinate. Grounding responses in real knowledge with a confidence threshold is what makes the system trustworthy."
+
+
+Slide 11 — Workflow Diagram (15 sec)
+
+"Here's the full workflow — from ticket submission through cache check, RAG retrieval, LLM answer, classify, priority, route, guardrails, SLA prediction, save, and return."
+
+
+Slide 12 — Workflow Deep Dive (10 sec)
+
+"Each stage has a clear purpose — Why, When, Where, and How. Nothing is placed randomly."
+
+
+Slide 13 — Sequence Diagram (10 sec)
+
+"At runtime, the request flows through 15+ steps across the agent, RAG, tools, guardrails, SLA, and memory — everything traceable."
+
+
+Slide 14 — Data Flow (10 sec)
+
+"Data moves cleanly from inputs to decisions to output — with the guardrail + SLA layers now sitting right before the response."
+
+
+Slide 15 — Class View (10 sec)
+
+"I designed structured classes — models, agent, tools, RAG, memory, analytics — and added a new SLAManager class for prediction and escalation."
+
+
+Slide 16 — Guardrails + RBAC Overview (10 sec)
+
+"Guardrails override priority/team for critical cases. RBAC keeps sensitive data admin-only."
+
+
+Slide 17 — Deterministic Guardrails (15 sec)
+
+"My first version used keyword matching — simple and explainable, but it missed variations. If a user wrote 'app not reachable' instead of 'outage,' the guardrail failed."
+
+
+Slide 18 — Model-Based Guardrails ⭐ (20 sec)
+
+"So I upgraded to model-based guardrails. Now an LLM classifies the ticket into categories like production outage, security incident, data loss, or business-critical failure — returning structured JSON with type, severity, and confidence."
+
+
+Slide 19 — Hybrid Guardrail Flow (15 sec)
+
+"The final design is hybrid — rule-based first for speed, model-based after for context. Only if confidence is above 0.70, the guardrail triggers."
+
+
+Slide 20 — Guardrail Example Scenarios (10 sec)
+
+"Here are real ticket examples — outage, security, data loss, and a normal password reset. Only the critical ones trigger guardrails."
+
+
+Slide 21 — Why Guardrails Matter (10 sec)
+
+"Guardrails are the AI safety net — they prevent silent misrouting of critical tickets."
+
+
+Slide 22 — SLA Prediction: What & Why ⭐ (20 sec)
+
+"The next feature I added is SLA prediction. SLA means the promised time to respond or resolve a ticket. Not every ticket is equal — some cannot wait. The system now predicts SLA risk so admins can act early."
+
+
+Slide 23 — SLA: How It Works (15 sec)
+
+"It takes priority, category, and guardrail result as input, and outputs SLA hours, risk level, escalation required, escalation team, and a reason — all as structured JSON."
+
+
+Slide 24 — Escalation Logic (10 sec)
+
+"Escalation follows clear tiers — Critical goes to Incident Response, sensitive categories go to specialized teams, low priority stays in normal support."
+
+
+Slide 25 — SLA + Escalation Examples (15 sec)
+
+"For example — a production outage gets a 2-hour SLA and Incident Response Team. A password reset gets 24 hours and normal support. The system knows the difference."
+
+
+Slide 26 — Confidence, Cache & Fallback (10 sec)
+
+"For reliability, I added cache to avoid recomputation, a confidence score to signal trust, and fallback logic when internal KB is weak."
+
+
+Slide 27 — Memory & Audit Trail (10 sec)
+
+"Every ticket logs the full trail — RAG score, guardrail source, SLA decision, escalation team, and reason. This is what makes AI decisions reviewable."
+
+
+Slide 28 — Admin Analytics Dashboard (10 sec)
+
+"The admin dashboard shows ticket volume, RAG vs fallback ratio, guardrail counts, and SLA risk distribution."
+
+
+Slide 29 — RBAC Deep Dive (10 sec)
+
+"Users see only what they need. Admins see everything — RAG scores, guardrail sources, SLA predictions, and audit trail."
+
+
+Slide 30 — Implementation Depth (10 sec)
+
+"I studied agent design, RAG best practices, guardrail patterns, and SLA management before building — then implemented end-to-end."
+
+
+Slide 31 — Evaluation Metrics (10 sec)
+
+"The system is measurable across classification, routing, RAG, guardrails, SLA, and operations."
+
+
+Slide 32 — Production Considerations (10 sec)
+
+"I designed with trust, reliability, security, and scale in mind — not just to make it work, but to make it enterprise-ready."
+
+
+Slide 33 — Future Improvements (10 sec)
+
+"The roadmap moves through three phases — RBAC + KB polish, ITSM connectors, and finally human-in-loop, observability, and multilingual."
+
+
+Slide 34 — Key Learnings (10 sec)
+
+"The biggest learnings — clean architecture pays off, RAG needs a threshold, hybrid guardrails are the sweet spot, and SLA + audit make triage actionable."
+
+
+Slide 35 — Final Takeaway (15 sec)
+
+"So this is not just a chatbot. It's a full support workflow — RAG, tools, hybrid guardrails, SLA, RBAC, analytics, and audit — designed for review, safety, and continuous improvement. Thank you — I'd love to take your questions

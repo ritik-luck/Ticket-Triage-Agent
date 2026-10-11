@@ -1,0 +1,16 @@
+File: rag/augmentation.py
+
+Overview:
+This module builds the retrieval-augmented reasoning step for ticket triage. It asks the retriever for relevant knowledge-base chunks, decides whether those matches are strong enough to trust, and then uses the LLM to turn the retrieved context into useful troubleshooting guidance.
+
+The reason for this layer is grounding. A raw language model can sound confident without being correct, so this module helps anchor the response in actual internal documentation before the triage engine relies on it.
+
+Classes and methods:
+- AugmentationManager.__init__(minimum_score=0.50): Sets the retrieval confidence threshold that controls when RAG is considered strong enough to trust.
+- AugmentationManager.build_augmented_context(ticket_text): Retrieves relevant chunks, checks whether the best score clears the threshold, builds the prompt, calls the LLM, and returns both the derived answer and the metadata that explains how it was produced.
+- AugmentationManager._format_retrieved_context(retrieved_chunks): Turns retrieved chunks into a readable context block with source, chunk ID, score, and text.
+- AugmentationManager._build_prompt(ticket_text, retrieved_context): Builds the prompt that tells the LLM to reason over the internal knowledge base rather than inventing its own answer.
+- AugmentationManager._convert_response_to_steps(response_text): Parses the model output and turns it into a clean list of troubleshooting steps.
+
+Instances:
+- augmentation_manager: Shared augmentation manager used by the triage pipeline.

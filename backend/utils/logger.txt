@@ -1,0 +1,9 @@
+File: utils/logger.py
+
+Overview:
+This module centralizes logging setup for the backend. Rather than configuring loggers in multiple places, the rest of the code can call one helper and get a consistent logger format, level, and output destination.
+
+That consistency matters because logs are only useful when they are easy to scan and compare. A shared logger setup keeps messages readable during development and easier to search in production traces.
+
+Functions:
+- get_logger(name): Returns a configured logger instance that writes to standard output with timestamps, INFO-level defaults, and propagation disabled.

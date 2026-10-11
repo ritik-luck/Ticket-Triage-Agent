@@ -1,0 +1,15 @@
+File: chat/intake.py
+
+Overview:
+This module powers the conversational intake experience for the chat endpoint. Instead of forcing users to fill in every ticket field at once, it keeps track of the conversation, remembers what has already been collected, and nudges the user toward the missing pieces one step at a time.
+
+The goal here is user experience as much as data collection. By gathering details naturally through chat, the system reduces friction, improves completeness, and makes it more likely that the triage engine receives enough context to make a useful decision.
+
+Classes and methods:
+- ChatIntakeManager.__init__(): Creates the in-memory session storage used to remember conversation state between messages.
+- ChatIntakeManager.start_or_continue(request): Accepts the latest user message, updates the current session, tries to extract ticket fields from the text, and returns the next conversational state.
+- ChatIntakeManager._next_missing_field(ticket): Finds the first required ticket field that is still missing so the conversation can ask for the right follow-up.
+- ChatIntakeManager._merge_message_into_ticket(message, ticket): Uses simple content heuristics to map free-form user text into structured ticket fields such as name, email, subject, description, or department.
+
+Instances:
+- chat_intake_manager: Shared manager instance used by the chat intake route so all chat requests follow the same conversation logic.

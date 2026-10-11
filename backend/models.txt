@@ -1,0 +1,14 @@
+File: models.py
+
+Overview:
+This module defines the typed data contracts used by the backend. These Pydantic models make sure incoming requests are valid, outgoing responses have a predictable shape, and the rest of the code can work with structured fields instead of loosely typed dictionaries.
+
+In practice, this file acts like the schema layer of the system. It explains what data the app expects, what it returns, and which fields should be visible to admins versus regular users.
+
+Classes:
+- TicketRequest: Describes the incoming ticket payload, including who submitted it and the issue details needed for triage.
+- TriageResponse: Describes the full internal triage result, including routing, confidence, suggested fixes, SLA prediction, guardrail output, and audit information.
+- UserTriageResponse: Describes the limited version of the triage result that hides internal details from non-admin users.
+- ChatMessageRequest: Describes a chat-based intake message and optional session identifier used to continue a conversation.
+- ChatMessage: Represents one message in the chat history, including who said it and what they said.
+- ChatIntakeResponse: Describes the full conversational intake state, including the current chat history, whether the ticket is ready, and the partially or fully assembled ticket payload.

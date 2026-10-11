@@ -1,0 +1,13 @@
+File: tools/sla.py
+
+Overview:
+This module estimates SLA expectations for a ticket. It uses the category, priority, assigned team, escalation state, and confidence level to predict how quickly the issue should be responded to and resolved.
+
+The point of this module is to give the triage result operational meaning. Once the system knows what the issue is and who should handle it, SLA prediction helps translate that into urgency and response expectations.
+
+category + priority + assigned team + confidence + escalation flag -> sla prdictor-> target hours, response hoursrisk level esclation decision
+
+Functions:
+- _clamp_hours(hours): Rounds hour values and keeps the minimum at one hour so the prediction never becomes unrealistically small.
+- predict_sla(category, priority, assigned_team, escalation_required, confidence): Calculates target hours, response hours, breach risk, and escalation guidance, then packages the result with a reason string.
+- _build_sla_reason(category, priority, assigned_team, escalation_required, confidence, predicted_resolution_hours, risk): Writes a human-readable explanation for why the SLA estimate landed where it did.

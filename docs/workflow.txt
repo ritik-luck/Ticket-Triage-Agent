@@ -1,0 +1,83 @@
+Workflow Diagram Discussion
+
+This workflow shows how one ticket moves through the AI Ticket Triage Agent from the moment it is submitted until the final result is saved. Compared with a sequence diagram, this view is easier for explaining the logic in stages: first the system accepts and validates the request, then it searches for prior knowledge, then it classifies and routes the issue, and finally it applies safety checks, predicts SLA, and stores the outcome.
+
+The main purpose of this workflow is to make support handling faster, more consistent, and more explainable. A human support agent might read a ticket, remember a similar case, check documentation, judge urgency, and then decide where to send it. This system follows the same reasoning, but it does it in a structured and repeatable way.
+
+Main flow overview
+- The user submits a ticket from the React frontend.
+- FastAPI receives and validates the request.
+- The backend builds a base text version of the ticket.
+- The agent checks memory for a repeated or similar issue.
+- If needed, the agent retrieves knowledge-base chunks from ChromaDB.
+- The RAG layer decides whether the retrieved context is strong enough to trust.
+- The agent generates an internal answer or a fallback answer.
+- The tools layer classifies the ticket, detects priority, and assigns a support team.
+- Guardrails check for critical or risky situations.
+- The SLA engine estimates response and resolution expectations.
+- The final ticket record is saved for later reuse and analytics.
+
+Detailed workflow explanation
+1. Start
+   The workflow begins as soon as the user opens the ticket form and prepares to report a problem.
+
+2. User submits ticket
+   The user enters the issue details, such as name, email, subject, and description. This is the raw input that the rest of the system will analyze.
+
+3. Validate request data
+   The API checks whether the incoming request contains the required fields and whether the data shape matches the expected schema. This step matters because the rest of the pipeline assumes the ticket is well-formed.
+
+4. Build base_text
+   The backend converts the ticket into a unified text string. This is important because the similarity search, classification, priority detection, and routing tools all work better when the issue is represented as one consistent block of text.
+
+5. Check cache
+   The agent looks in memory to see whether a similar ticket has already been handled. If the issue is repeated, the system can reuse the earlier decision or solution instead of starting from scratch.
+
+6. Retrieve chunks from ChromaDB
+   If the cache does not provide a confident match, the agent moves to the retrieval layer. The query is embedded and compared against the knowledge-base chunks stored in ChromaDB, which lets the system find previous documentation or troubleshooting notes that are semantically similar.
+
+7. RAG score OK?
+   The retrieval results are scored to decide whether the matches are reliable enough. This is a key quality gate: if the score is strong, the retrieved knowledge can safely support the answer; if the score is weak, the system should not pretend the knowledge is certain.
+
+8. Generate internal / fallback answer
+   When the RAG score is acceptable, the Groq LLM uses the internal knowledge context to generate grounded troubleshooting steps. If the retrieval is weak, the system can fall back to broader guidance so the user still receives something useful instead of an empty response.
+
+9. Classify ticket
+   The classification tool decides the issue category. This step gives the ticket structure, such as whether it is a bug, service request, access issue, or another type of support case.
+
+10. Detect priority
+   The priority tool estimates urgency. This is important because two tickets may belong to the same category but still need very different handling depending on keywords, severity, or business impact.
+
+11. Assign support team
+   The routing tool maps the category and issue text to the best support team. This keeps the workflow operationally useful by making sure the ticket reaches the people most likely to resolve it quickly.
+
+12. Apply guardrails
+   Guardrails are the safety layer. If the system detects an outage, security concern, data-loss risk, or similar critical event, it can override the normal routing or priority decision and force a safer handling path.
+
+13. SLA prediction (NEW)
+   The SLA engine estimates how soon the ticket should be responded to and resolved. It uses the category, priority, assigned team, and escalation state to determine whether the ticket is low risk, medium risk, or high risk.
+
+14. Save ticket log → End
+   Once the workflow is complete, the final triage result is stored in memory. Saving the ticket is important because it supports later lookup, duplicate detection, analytics, repeated-issue reporting, and auditability.
+
+Why each step exists
+- Validation protects the backend from malformed input.
+- Base text creation keeps every downstream decision working from the same ticket summary.
+- Cache lookup saves time for repeated issues.
+- Retrieval from ChromaDB grounds answers in real project knowledge.
+- The RAG score threshold prevents weak or noisy retrieval from contaminating the response.
+- Internal or fallback answers ensure the user still gets a helpful reply.
+- Classification and priority turn free-form text into operational decisions.
+- Routing sends the issue to the right team.
+- Guardrails protect the system from misrouting critical incidents.
+- SLA prediction helps the support team understand urgency and risk.
+- Saving the ticket closes the loop so future tickets and analytics can benefit from the same record.
+
+How the logic fits together
+The workflow is intentionally hybrid. It mixes deterministic rules with LLM-based reasoning because support triage needs both reliability and flexibility. Rules are used where correctness and safety matter most, while the model adds semantic understanding for messy natural-language tickets. That balance is what makes the workflow practical.
+
+In simpler terms, the system behaves like a careful support coordinator: it listens to the ticket, checks whether it has seen something similar before, reads internal knowledge if needed, decides what kind of issue it is, judges urgency, routes it, protects against risky mistakes, predicts SLA, and then stores the result.
+
+Short explanation for presentation
+"The workflow starts when the user submits a ticket. The backend validates the input, creates a base text summary, checks for cached matches, retrieves knowledge-base chunks if needed, evaluates the RAG score, generates a grounded or fallback answer, classifies the ticket, detects priority, assigns the right team, applies guardrails, predicts SLA, and saves the final ticket log."
+

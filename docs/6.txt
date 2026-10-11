@@ -1,0 +1,42 @@
+Solution Overview
+
+This solution is built as a layered support workflow rather than a single model response. That choice matters because support triage is not one task — it is a chain of tasks that starts with collecting the issue, continues with finding the right knowledge, then makes decisions about category, priority, routing, and safety, and finally records the result for review. The project separates those responsibilities so each stage can do one job well.
+
+Ticket Intake
+The process begins when the user fills out the React form.
+
+- The form collects the issue details in a structured way.
+- The request is sent to the FastAPI backend so it can be validated and processed.
+
+This step is important because the system needs clean input before it can make good decisions. By collecting the ticket in a consistent format, the backend can compare, classify, and route the issue more reliably.
+
+RAG Search
+After intake, the system looks for internal knowledge that might help solve the issue.
+
+- The internal knowledge base is searched first.
+- A confidence score determines whether the system trusts the internal match or needs to fall back.
+
+This is the grounding step of the whole solution. Instead of guessing from general language patterns, the system tries to reuse real support knowledge. That improves answer quality and helps keep the response tied to actual project data.
+
+Decision Tools + Guardrails
+Once the context is available, the system turns it into an operational decision.
+
+- The category, priority, and route are assigned.
+- Rule-based and model-based guardrails detect critical cases.
+
+This stage makes the response useful for support operations. It is not enough to know what the ticket is about — the system also needs to know how urgent it is, where it should go, and whether it should be escalated. Guardrails make sure serious incidents are not handled like ordinary requests.
+
+SLA + Admin Audit
+After the decision is made, the system adds operational visibility.
+
+- SLA and escalation are predicted for each ticket.
+- Every result is saved and can be reviewed by an admin.
+
+This final step is what turns a triage response into a traceable support record. SLA prediction helps the support team understand timing and urgency, while the saved audit trail helps admins review how the decision was reached.
+
+Why this structure works
+This design is effective because it keeps the workflow simple to understand while still covering the real needs of support triage. Intake handles data collection, RAG handles knowledge grounding, decision tools handle categorization and routing, guardrails protect critical cases, and SLA plus audit support governance. Each layer contributes something different, but together they form a complete support solution.
+
+Short explanation for presentation
+"The solution has four main parts: ticket intake, RAG search, decision tools with guardrails, and SLA plus admin audit. Together they make the system structured, grounded in knowledge, safe for critical cases, and traceable for review."
+

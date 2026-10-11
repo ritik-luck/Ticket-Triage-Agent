@@ -1,0 +1,18 @@
+File: agent.py
+
+Overview:
+This module contains the main decision-making pipeline for the backend. It turns a raw ticket request into a structured triage result by combining several smaller steps: text preparation, similarity lookup, RAG retrieval, fallback guidance, classification, routing, guardrail enforcement, confidence scoring, SLA prediction, and persistence.
+
+The reason this module exists is to keep the triage logic in one place. That makes the workflow easier to follow and easier to improve later, because the system can evolve each step independently while still producing one consistent final response.
+
+Functions:
+- build_issue_text(request): Turns the request object into one clean issue summary so the downstream components all analyze the same text.
+- find_cached_ticket(issue_text): Looks through stored tickets for a semantically similar past issue and reuses it when the match is strong enough.
+- find_similar_tickets(issue_text, limit=3): Retrieves the closest historical examples so the system can compare the current ticket with previous cases.
+- convert_web_answer_to_steps(answer): Normalizes free-form fallback output into short troubleshooting steps that are easier to display and reuse.
+- build_decision_context(issue_text, llm_response, suggested_solution, retrieved_context=''): Combines the original ticket, model output, suggested steps, and any knowledge-base context into one decision prompt.
+- calculate_confidence(rag_used, rag_score, web_search_used): Produces an overall confidence value by weighing the quality of retrieval and whether the system had to fall back.
+- build_confidence_reason(rag_used, web_search_used, similar_tickets): Explains the confidence score in plain language so the result is easier to audit.
+- build_clarifying_question(confidence, category, assigned_team, similar_tickets): Creates a follow-up question when the ticket is too uncertain to route cleanly.
+- run_ticket_triage(request): Orchestrates the full triage flow from input to final saved response.
+- run_ticket_triage_async(request): Runs the same pipeline in a background thread so async callers do not block.

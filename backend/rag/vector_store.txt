@@ -1,0 +1,14 @@
+File: rag/vector_store.py
+
+Overview:
+This module creates and accesses the persistent ChromaDB vector store that backs retrieval. It is responsible for taking raw documents, turning them into chunks and embeddings, and storing them in a form that semantic search can query quickly.
+
+In other words, this is the indexing layer of the RAG pipeline. Without it, the retriever would have nothing meaningful to search against.
+
+Classes and methods:
+- VectorStoreManager.__init__(): Creates the persistent ChromaDB storage directory and client used for storage and search.
+- VectorStoreManager.build_vector_store(): Loads documents, chunks them, generates embeddings, recreates the collection, and writes the chunks in batches.
+- VectorStoreManager.get_collection(): Returns the ChromaDB collection or raises an error if the store has not been built yet.
+
+Instances:
+- vector_store_manager: Shared vector store manager used by retrieval and augmentation.

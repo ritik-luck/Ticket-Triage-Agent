@@ -1,0 +1,10 @@
+File: rag/chunking.py
+
+Overview:
+This module prepares long documents for retrieval by splitting them into smaller overlapping chunks. Breaking content up this way makes the embeddings more useful, because the retriever can match a specific section of a document instead of treating the whole file as one large blob.
+
+The overlap matters because important context often sits near chunk boundaries. Keeping a small amount of repeated text between chunks helps preserve meaning when a relevant sentence spans two pieces.
+
+Functions:
+- split_text_into_chunks(text, chunk_size=500, overlap=100): Breaks a text string into overlapping slices of a fixed size so the retriever can work with smaller pieces of meaning.
+- chunk_documents(documents): Converts each document dictionary into a set of chunk dictionaries that preserve the source name, chunk number, and chunk text.

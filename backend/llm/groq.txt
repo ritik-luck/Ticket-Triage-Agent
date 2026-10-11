@@ -1,0 +1,15 @@
+File: llm/groq.py
+
+Overview:
+This module owns the connection to Groq and hides the model-client setup behind a small helper function. The rest of the backend can ask for an LLM response without needing to know how the client is authenticated or which model is being called.
+
+Keeping this logic isolated is useful because model configuration tends to change over time. If the API key, model name, or client setup changes later, the rest of the application should not need to be rewritten.
+
+Behavior:
+- Loads environment variables with dotenv so local development and deployment can share the same configuration pattern.
+- Reads `GROQ_API_KEY` from the environment.
+- Raises an error early if the API key is missing, which makes configuration issues easier to spot.
+- Creates the Groq client once and reuses it for later requests.
+
+Functions:
+- generate_response(prompt): Sends a prompt to Groq using the configured chat model and returns the assistant text content for downstream triage steps.

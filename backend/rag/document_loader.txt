@@ -1,0 +1,9 @@
+File: rag/document_loader.py
+
+Overview:
+This module reads the knowledge-base CSV files and turns them into a normalized document list that the vector store can index. Its job is to hide the file-format details from the rest of the RAG pipeline so the retriever always receives consistent input.
+
+The loader also does a little bit of cleanup work. It looks for likely subject, body, and answer columns, then combines them into a single text field so later steps can focus on retrieval and reasoning rather than CSV parsing.
+
+Functions:
+- load_documents(): Reads the CSV files in the knowledge base, infers useful columns, combines each row into a normalized text string, and returns a list of document dictionaries with source metadata.

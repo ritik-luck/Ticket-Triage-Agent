@@ -1,0 +1,72 @@
+Sequence Diagram Discussion
+
+This sequence describes how a ticket moves through the project from the moment a user submits it until the result is shown on the frontend and stored for later review. The flow is designed to be practical rather than purely academic: it combines API handling, caching, retrieval-augmented generation, rule-based tools, guardrails, SLA prediction, persistence, and admin analytics.
+
+Main participants
+- User / React UI: collects the issue and displays the final triage result.
+- FastAPI backend: exposes the `/triage` endpoint and coordinates the request.
+- Agent: runs the actual triage workflow and combines the outputs from each subsystem.
+- Cache / Memory: stores previous tickets and lets the agent reuse repeated answers.
+- RAG pipeline: loads knowledge-base content, searches for similar chunks, and grounds the response.
+- ChromaDB vector store: holds embeddings for the knowledge-base chunks.
+- Groq LLM: generates reasoning, suggested steps, and fallback guidance.
+- Tools layer: classifies the ticket, detects priority, routes it, and applies guardrails.
+- SLA engine: predicts resolution and response timing and decides whether escalation is needed.
+- Admin dashboard: reads analytics from stored tickets and shows operational trends.
+
+Detailed request path
+1. The user submits a support ticket through the React interface with a subject, description, and user details.
+2. React sends the payload to the FastAPI `/triage` endpoint.
+3. FastAPI validates the request using the Pydantic models so the backend receives clean, structured data.
+4. The API forwards the request to the agent, which becomes the orchestrator for the rest of the workflow.
+5. The agent converts the incoming ticket into a unified issue text so every downstream step analyzes the same content.
+6. The agent checks memory to see whether a nearly identical ticket already exists.
+7. If a strong cached match is found, the agent can reuse the prior result and reduce repeated computation.
+8. If cache confidence is low or the issue looks new, the agent sends the issue text into the RAG pipeline.
+9. The RAG layer loads knowledge-base content that has already been split into chunks and embedded into ChromaDB.
+10. The retriever converts the ticket text into an embedding and searches for the most similar chunks.
+11. The top chunks are returned with similarity scores, source names, and chunk identifiers.
+12. If the score is high enough, the augmentation manager treats the retrieval as trustworthy and builds a grounded context block.
+13. The Groq LLM receives the ticket text plus the retrieved context and generates suggested troubleshooting steps.
+14. If the internal retrieval is weak, the system can fall back to a broader web-style guidance path instead of forcing a weak RAG answer.
+15. The agent then combines the raw ticket, any RAG or fallback answer, and the retrieved context into one decision context.
+16. The classification tool assigns a support category using LLM output first and keyword rules second.
+17. The priority tool estimates urgency in the same hybrid way, again preferring model reasoning but keeping deterministic fallback rules.
+18. The routing tool chooses the assigned team using category-based logic and extra text heuristics.
+19. The guardrail tool checks for high-risk situations such as production outages, security incidents, or data loss.
+20. If the ticket is critical, guardrails can override the normal category, priority, or routing decision to force safe handling.
+21. The SLA engine predicts response time, resolution time, and breach risk based on the final classification, priority, team, and escalation state.
+22. The SLA result also explains whether escalation is required and why the system reached that conclusion.
+23. The agent computes a final confidence score based on whether RAG was used, how strong the retrieval score was, and whether fallback logic was needed.
+24. If the confidence is low, the system can generate a clarifying question instead of pretending the answer is fully certain.
+25. The agent assembles the final triage response, including suggested solutions, assigned team, SLA metadata, guardrail notes, confidence, and audit trail.
+26. The result is written to memory so future tickets, repeated-issue checks, and analytics can use the same record.
+27. FastAPI returns the response to React.
+28. React displays the result to the user in a readable format.
+
+Detailed processing and response path
+29. The frontend shows the category, priority, team assignment, suggested steps, and any escalation information.
+30. If the caller is an admin, the backend can return a richer response with internal metadata and audit details.
+31. If the caller is a regular user, the API filters the response so sensitive internal fields are hidden.
+32. The saved ticket becomes part of the history used for duplicate detection and repeated-issue analytics.
+33. The analytics manager reads the stored ticket logs and computes category distribution, priority spread, team distribution, RAG usage, fallback usage, guardrail triggers, SLA risk, and recent tickets.
+34. The admin dashboard uses those summaries to help support teams understand trends and identify common failure patterns.
+
+Why this sequence matters
+35. The request starts with raw human language, but the backend converts it into structured operational data.
+36. Each stage exists for a reason: cache improves speed, RAG improves grounding, tools improve consistency, guardrails improve safety, and SLA logic improves response planning.
+37. The design is intentionally layered so that one weak stage does not break the entire system.
+38. The result is a support workflow that is explainable, auditable, and useful both for end users and for admins.
+
+How the logic fits together
+- The API layer focuses on transport and access control.
+- The agent layer focuses on orchestration and decision-making.
+- The RAG layer focuses on knowledge grounding.
+- The tools layer focuses on classification, routing, priority, and safety.
+- The memory layer focuses on persistence and history.
+- The analytics layer focuses on visibility and improvement.
+
+Short presentation version
+If you need to explain this diagram verbally, you can summarize it like this:
+"A user submits a ticket through React, FastAPI sends it to the agent, the agent checks memory and knowledge-base context, the retrieval layer grounds the answer, the tools classify and route the issue, guardrails protect critical cases, the SLA engine estimates urgency, the final response is saved, and the frontend plus admin dashboard display the result."
+

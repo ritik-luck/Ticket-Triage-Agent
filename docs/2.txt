@@ -1,0 +1,50 @@
+Why This Use Case Is Needed
+
+This use case exists because support ticket handling is one of those areas where small delays quickly become expensive. The work looks simple on the surface — read a ticket, understand the issue, and send it to the right team — but in practice it becomes messy very quickly. Tickets are written in natural language, they often leave out important details, and they can describe the same problem in many different ways. That makes manual triage slow, inconsistent, and difficult to scale.
+
+The project solves a real operational problem rather than creating AI for its own sake. It focuses on a place where AI can genuinely help: first-level support triage. That is the point where large volumes of requests enter the system, where repeated patterns appear, and where good automation can save time without removing human oversight for important cases.
+
+Business pain
+- Tickets arrive as unstructured text, so agents must first interpret what the user actually means before they can even begin solving the issue.
+- Manual triage slows down the first response, which can frustrate users and increase the backlog.
+- Similar issues are often handled differently by different people, which creates inconsistent routing and inconsistent decisions.
+- Critical incidents like outages, access failures, or security concerns may not get escalated fast enough if the initial review is manual.
+- As ticket volume grows, support costs increase because more people are needed just to sort and route issues.
+- Without a structured audit trail, it becomes harder to explain why a ticket was classified or routed a certain way.
+
+Why AI fits
+AI fits this problem because support tickets have a strong pattern structure even though the text itself is messy. People may describe the same issue in different words, but the underlying meaning is often the same. That makes the task well suited for a combination of retrieval, classification, routing, and rule-based decision support.
+
+The project does not depend on AI alone. Instead, it uses AI in the parts where language understanding matters most:
+- to recognize what the user is asking for,
+- to retrieve similar past cases and relevant internal knowledge,
+- to suggest likely next steps,
+- and to support a faster triage decision.
+
+At the same time, the system keeps deterministic logic for important decisions like guardrails, priority fallback, and SLA estimation. That hybrid design is valuable because it gives the flexibility of AI while still keeping the behavior explainable and safe.
+
+How the system helps
+- Repeated patterns can be recognized quickly, so the system does not start from zero on every ticket.
+- The knowledge base can guide answers, which reduces random or unsupported responses.
+- Category, priority, and routing can be standardized, so similar tickets receive similar treatment.
+- Audit logs make the reasoning traceable, which is important for review and debugging.
+- Critical cases can be escalated automatically, which reduces the chance of missing a serious issue.
+
+Expected outcome
+The expected outcome is not just a working demo, but a support workflow that feels more realistic and useful.
+
+- Faster first response for end users because the system can process and suggest a direction quickly.
+- Better consistency across support agents because the same rules and retrieval logic are used every time.
+- Reduced manual effort in first-level triage because routine classification and routing are automated.
+- Improved visibility for leads and admins because the system stores logs, decisions, and analytics.
+- Better handling of important cases because guardrails and escalation logic can push urgent tickets forward.
+- A strong foundation for enterprise ITSM automation because the architecture is modular and can grow over time.
+
+Why this matters in practice
+In a real support environment, triage is not a side task — it is the entry point to the entire support process. If triage is slow or inaccurate, the rest of the workflow suffers. A useful AI triage layer improves the quality of the whole system by making sure the right issue reaches the right team at the right time.
+
+That is why this project focuses on the use case itself rather than only the model output. The goal is to create a support assistant that is operationally meaningful: one that can reduce noise, improve response quality, and keep critical incidents from being buried in the queue.
+
+Short explanation for presentation
+"This use case is needed because support tickets are unstructured, repetitive, and time-sensitive. Manual triage is slow and inconsistent, while AI can help classify, route, and ground responses in real knowledge. The result is faster support, more consistency, better escalation handling, and a clearer audit trail for admins."
+

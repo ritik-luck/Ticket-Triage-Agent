@@ -1,0 +1,60 @@
+Sample Tickets for Testing
+
+Use these examples to test the triage flow, RAG retrieval, guardrails, routing, and SLA prediction. They are intentionally varied so you can check both normal tickets and critical cases.
+
+1) Password reset request
+Name: Rahul Sharma
+Email: rahul.sharma@example.com
+Department: IT
+Subject: Cannot reset my password
+Description: I tried resetting my password but the reset link expired before I could use it. Please help me regain access to my account.
+
+2) Production outage
+Name: Priya Nair
+Email: priya.nair@example.com
+Department: Operations
+Subject: App is down for everyone
+Description: The main application is returning a 500 error for all users after deployment. This looks like a production outage and needs immediate attention.
+
+3) Security incident
+Name: Ahmed Khan
+Email: ahmed.khan@example.com
+Department: Security
+Subject: Suspicious login activity
+Description: I noticed several failed login attempts followed by an unknown successful login from another location. Please check whether this is a security issue.
+
+4) Data loss
+Name: Sneha Iyer
+Email: sneha.iyer@example.com
+Department: Finance
+Subject: Missing records in dashboard
+Description: Some records disappeared from the reporting dashboard after the latest sync. I think data may have been lost and I need this reviewed urgently.
+
+5) Access request
+Name: Daniel Thomas
+Email: daniel.thomas@example.com
+Department: Sales
+Subject: Need access to CRM module
+Description: I need access to the CRM reporting module for my role. Please approve if possible or let me know what information is needed.
+
+6) Bug report
+Name: Aisha Patel
+Email: aisha.patel@example.com
+Department: Product
+Subject: Save button not working
+Description: When I click the save button on the settings page, nothing happens and the form does not submit. This started after the latest UI update.
+
+7) Performance issue
+Name: Vikram Rao
+Email: vikram.rao@example.com
+Department: Engineering
+Subject: Dashboard loads very slowly
+Description: The analytics dashboard takes more than 30 seconds to load and sometimes times out. It seems much slower than before.
+
+8) General how-to question
+Name: Meera Joseph
+Email: meera.joseph@example.com
+Department: Support
+Subject: How do I update my profile?
+Description: I cannot find where to change my profile details in the app. Please share the steps or point me to the right place.
+

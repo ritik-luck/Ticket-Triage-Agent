@@ -1,0 +1,146 @@
+Overview of backend functions and how the backend fits together
+
+This document is a map of the backend codebase. It helps explain what each module is responsible for, how the pieces connect, and why the system is split into so many smaller functions instead of one large block of logic.
+
+The overall idea is simple: the API receives requests, the agent orchestrates triage, the RAG layer grounds answers in knowledge, the tools layer makes structured decisions, and the memory and analytics layers preserve and summarize the results.
+
+File: backend/main.py
+- is_admin_role: checks whether a caller should see admin-level data, which protects sensitive triage details.
+- build_user_response: strips internal-only fields from a full `TriageResponse` so non-admin users see a safer result.
+- home: returns a simple running message so the API can be quickly checked by humans or tools.
+- health_check: returns service status information for monitoring and uptime checks.
+- triage_ticket: accepts a ticket, runs the full triage pipeline, and returns the appropriate response shape for the caller.
+- get_all_tickets: returns stored tickets, with admins receiving the full records and regular users getting a reduced view.
+- get_ticket: fetches one stored ticket by ID and applies access checks before returning it.
+- clear_ticket_memory: clears the saved ticket log for admins when they need to reset the local memory store.
+- get_analytics_dashboard: returns summary analytics that help admins understand ticket trends and risk patterns.
+- get_analytics_tickets: returns the underlying normalized ticket data that powers the analytics views.
+
+File: backend/agent.py
+- build_issue_text: creates the shorter issue summary used by similarity search and downstream decision steps.
+- build_full_ticket_text: builds the richer text version of a ticket, including metadata that may help classification and routing.
+- find_cached_ticket: checks saved tickets for a strong semantic match so repeated issues can be handled faster.
+- convert_web_answer_to_steps: turns fallback guidance into a cleaner step list that the final response can display.
+- build_decision_context: combines the ticket, retrieval results, and model reasoning into one prompt-sized context block.
+- calculate_confidence: computes how trustworthy the final answer should be based on retrieval quality and fallback usage.
+- run_ticket_triage: coordinates the whole triage process from input preparation through response generation and persistence.
+
+File: backend/models.py
+- TicketRequest: describes the incoming ticket data the API expects from a user.
+- TriageResponse: describes the complete internal result of triage, including the decision trail and operational metadata.
+- UserTriageResponse: describes the user-safe subset of the triage output that hides internal details.
+
+File: backend/run_evaluation.py
+- print_evaluation_summary: formats saved evaluation results into a readable summary for debugging and regression review.
+
+File: backend/evaluation/evaluator.py
+- EvaluationRunner.__init__: stores the service URL and the location where evaluation reports should be written.
+- run_all_tests: executes every test case, gathers results, and produces a summary report.
+- run_test: sends one request to `/triage`, measures response time, and records both checks and failures.
+- validate_response: compares the API response with the expected behavior for that test case.
+- check_required_fields: verifies that required output keys are present.
+- check_expected_value: compares one field against an expected value and supports multiple valid answers when needed.
+- check_non_empty_list: ensures a response field contains useful list data instead of an empty placeholder.
+- save_report: writes the generated summary to `memory/evaluation_report.json` for later review.
+
+File: backend/rag/chunking.py
+- split_text_into_chunks: breaks a long document into smaller overlapping chunks so semantic search can work on manageable pieces.
+- chunk_documents: converts source documents into indexed chunk records that preserve source metadata.
+
+File: backend/rag/document_loader.py
+- load_documents: scans the knowledge-base CSV files, finds the useful content columns, and returns normalized documents with source metadata.
+
+File: backend/rag/embeddings.py
+- EmbeddingManager.__init__: loads the configured sentence-transformer model so later calls can reuse it.
+- _load_model: handles the actual model loading and reports status details for debugging.
+- generate_embeddings: converts text into vector embeddings for retrieval and similarity matching.
+- embedding_manager: shared module-level instance so the model is loaded once and reused.
+
+File: backend/rag/retreiver.py
+- Retriever.__init__: stores how many retrieval results should be returned.
+- retrieve: embeds the query, searches the vector store, and returns the closest matching chunks with a normalized score.
+- _convert_distance_to_score: turns a raw vector distance into a friendlier similarity score.
+- retriever: shared retriever instance used by the RAG pipeline.
+
+File: backend/rag/vector_store.py
+- VectorStoreManager.__init__: prepares the persistent ChromaDB location used by retrieval.
+- build_vector_store: loads documents, chunks them, embeds them, and writes them into the vector store in batches.
+- get_collection: returns the collection name the retriever depends on, or raises if the store has not been built yet.
+- vector_store_manager: shared vector store instance used by indexing and retrieval code.
+
+File: backend/rag/augmentation.py
+- AugmentationManager.__init__: sets the retrieval score threshold used to decide whether RAG is trustworthy enough.
+- build_augmented_context: retrieves relevant knowledge, checks the match quality, calls the LLM when appropriate, and returns the structured RAG result used by triage.
+- _format_retrieved_context: rewrites raw retrieval output into a readable context block.
+- _build_prompt: builds the prompt that tells the model to answer from internal knowledge only.
+- _convert_response_to_steps: turns the model response into a clean step list.
+- augmentation_manager: shared augmentation instance used in the triage workflow.
+
+File: backend/memory/memory_manager.py
+- MemoryManager.__init__: creates the memory folder and prepares the ticket log file.
+- _initialize_log_file: creates an empty JSON log when the file does not already exist.
+- save_ticket_log: normalizes a triage response and appends it to `memory/ticket_logs.json`.
+- get_all_ticket_logs: returns the stored ticket list, or an empty list if the file cannot be read safely.
+- get_ticket_by_id: searches the saved tickets for one matching ID.
+- clear_memory: resets the stored ticket history to an empty list.
+- _normalize_ticket_log: standardizes audit trail and guardrail fields before saving.
+- _extract_guardrail_reason: pulls a guardrail explanation out of the audit trail when one exists.
+- memory_manager: shared memory instance used by the backend.
+
+File: backend/memory/analytics_manager.py
+- AnalyticsManager.get_dashboard_summary: returns the full analytics snapshot used by the admin dashboard.
+- _count_by_field: counts values for a given ticket field across the saved records.
+- _build_rag_web_summary: measures how often the system used RAG versus web fallback.
+- _build_guardrail_summary: counts guardrail-triggered tickets and categorizes critical patterns.
+- get_latest_guardrail_reason: returns the newest guardrail explanation from the ticket history.
+- _get_guardrail_reason: extracts the reason text from one ticket record.
+- _build_sla_summary: calculates SLA risk statistics and groups them by severity.
+- _get_audit_text: flattens the audit trail into lowercase text for heuristic analysis.
+- _get_recent_tickets: returns the most recent saved tickets for quick dashboard display.
+- _find_repeated_issues: spots categories that appear more than once so recurring problems are easier to notice.
+- analytics_manager: shared analytics instance used by the API.
+
+File: backend/tools/web_search.py
+- should_use_web_search: decides whether the internal retrieval score is weak enough to justify a web fallback.
+- web_search_fallback: builds a fallback prompt and asks the model for broader troubleshooting guidance.
+
+File: backend/tools/routing.py
+- route_ticket: chooses the best support team by combining category routing with simple text heuristics.
+
+File: backend/tools/sla.py
+- _clamp_hours: keeps SLA hour predictions above one hour and rounds them for readability.
+- predict_sla: estimates response and resolution time, breach risk, and escalation guidance from the ticket context.
+- _build_sla_reason: builds a clear explanation for why the SLA estimate looks the way it does.
+
+File: backend/tools/priority.py
+- _keyword_detect_priority: maps known urgency keywords to a fallback priority and confidence.
+- _parse_llm_json: tries to recover JSON from raw model output.
+- _build_priority_prompt: builds the prompt for the LLM-based priority estimate.
+- _normalize_priority_result: cleans and bounds the model output values.
+- detect_priority: runs the full priority decision path and falls back to the rule-based result when needed.
+- is_escalation_required: decides whether the ticket should be escalated based on the priority and issue text.
+
+File: backend/tools/response.py
+- generate_final_response: assembles the final response object returned to clients, including the recommended action.
+- generate_recommended_action: produces a short next-step suggestion from the ticket's priority, team, and escalation state.
+
+File: backend/tools/classification.py
+- _keyword_classify_ticket: applies rule-based keyword checks to return a fallback category and confidence.
+- _parse_llm_json: tries to extract valid JSON from raw model output.
+- _build_classification_prompt: builds the prompt that asks the LLM for category JSON.
+- _normalize_classification_result: clamps and normalizes model results before they are used elsewhere.
+- classify_ticket: runs the full classification flow and falls back to keyword rules when confidence is too low or the model fails.
+
+File: backend/tools/guadrails.py
+- _keyword_guardrail_fallback: applies rule-based guardrail checks to escalate critical production, security, outage, or data-loss signals.
+- _parse_llm_json: extracts JSON from raw model text.
+- _build_guardrail_prompt: asks the LLM whether guardrails should be applied and requests a JSON response.
+- _normalize_llm_result: normalizes the model's guardrail output.
+- apply_guardrails: runs the full guardrail process and falls back to rule-based safety checks when necessary.
+
+File: backend/llm/groq.py
+- generate_response: calls the Groq client with a prompt and returns the model text response, assuming `GROQ_API_KEY` is configured.
+
+Notes:
+- This document covers the main backend Python modules and their most important public functions and classes.
+- For implementation details, inspect the source files under the `backend/` folder.

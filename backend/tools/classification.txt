@@ -1,0 +1,16 @@
+File: tools/classification.py
+
+Overview:
+This module decides which support category best fits a ticket. It prefers the LLM when the model response is usable, but it also includes deterministic keyword rules so the system still produces a result when the model output is weak, malformed, or unavailable.
+
+That hybrid design matters because classification is one of the first branching points in the workflow. A bad category can send a ticket down the wrong path, so the module is built to favor reliability over cleverness.
+
+ticket text-> ask llm to classify -> parse llm json respnse -> check confidence -> if confidence is low or llm fails , use keyword fallback -> return final category
+
+Functions:
+- _keyword_classify_ticket(ticket_text): Uses rule-based keyword matching to produce a safe fallback category and confidence.
+- _parse_llm_json(raw_text): Tries to recover valid JSON from the raw model output, even if the text includes extra formatting.
+- _build_classification_prompt(ticket_text): Builds the prompt that asks the model to return category information as strict JSON.
+- _normalize_classification_result(result, fallback_category): Cleans up the model output, bounds the confidence score, and guarantees a valid category.
+- classify_ticket(ticket_text): Runs the full classification path and falls back to the keyword method whenever the model result is not trustworthy enough.
+

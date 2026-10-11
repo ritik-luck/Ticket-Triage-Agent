@@ -1,0 +1,9 @@
+File: tools/web_search.py
+
+Overview:
+This module provides the external fallback path used when the internal knowledge base does not have a strong enough answer. It gives the triage system a way to generate helpful guidance even when the internal RAG retrieval is weak or empty.
+
+The fallback exists so the overall experience does not stop at "no match found." When internal data is insufficient, the system can still offer a reasonable answer while clearly marking that it came from a broader search-based path.
+
+Functions:
+- web_search_fallback(ticket_text): Builds the fallback prompt, asks the model for general troubleshooting guidance, and returns the answer with metadata showing that a fallback path was used.

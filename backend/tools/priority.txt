@@ -1,0 +1,13 @@
+File: tools/priority.py
+
+Overview:
+This module estimates how urgent a ticket is. It combines model-based reasoning with fallback keyword rules so the system can still assign a sensible priority when the model output is missing, unclear, or not confident enough.
+
+Priority is important because it influences routing, SLA predictions, and how quickly people should react. This module helps the rest of the system turn a free-form complaint into an operational decision.
+
+Functions:
+- _keyword_detect_priority(ticket_text): Uses rule-based keywords to return a safe fallback priority level.
+- _parse_llm_json(raw_text): Recovers JSON from raw model output when the response contains extra formatting.
+- _build_priority_prompt(ticket_text): Builds the prompt that asks the model to return a JSON priority estimate.
+- _normalize_priority_result(result, fallback_priority): Cleans the model output and keeps the priority and confidence values within valid bounds.
+- detect_priority(ticket_text): Runs the priority decision flow and falls back to rules when the model confidence is not strong enough.

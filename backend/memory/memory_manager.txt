@@ -1,0 +1,19 @@
+File: memory/memory_manager.py
+
+Overview:
+This module provides durable storage for triaged tickets using a local JSON file. Its job is simple but important: preserve what the system decided, keep the stored structure consistent, and make later retrieval or analytics possible.
+
+The memory layer exists because the agent needs history. Cached lookups, admin views, repeated issue detection, and analytics all rely on being able to read back prior tickets in a normalized format rather than reconstructing them from scratch every time.
+
+Classes and methods:
+- MemoryManager.__init__(): Ensures the storage directory exists and prepares the ticket log file used for persistence.
+- MemoryManager._initialize_log_file(): Creates an empty JSON array when the log file does not yet exist.
+- MemoryManager.save_ticket_log(ticket_response): Normalizes a triage result, appends it to the saved log, and writes the updated list back to disk.
+- MemoryManager.get_all_ticket_logs(): Loads all stored ticket records from the JSON file.
+- MemoryManager.get_ticket_by_id(ticket_id): Searches the saved log for one ticket with the matching ID.
+- MemoryManager.clear_memory(): Resets the stored ticket history by overwriting the file with an empty list.
+- MemoryManager._normalize_ticket_log(ticket_response): Standardizes the saved response shape so later reads are predictable.
+- MemoryManager._extract_guardrail_reason(audit_trail): Scans the audit trail for a guardrail explanation and returns it when present.
+
+Instances:
+- memory_manager: Shared memory manager instance used throughout the backend.

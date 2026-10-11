@@ -1,0 +1,55 @@
+Solution and Learnings
+
+This project was built to solve a very real support problem: tickets arrive as messy, unstructured text, and humans have to spend time figuring out what the issue is, how urgent it is, and which team should handle it. In a manual process, that first step is slow, inconsistent, and hard to scale. This project turns that process into a structured AI-assisted workflow.
+
+Problem
+The core problems this project addresses are practical and common in real support environments.
+
+- Tickets are written in different styles, so the same issue can look completely different from one user to another.
+- Manual triage takes time, which delays the first response and slows down resolution.
+- Support teams may route similar issues differently, which creates inconsistency.
+- Important cases like outages, security incidents, or data loss need faster escalation than normal tickets.
+- Knowledge is often spread across old tickets, docs, and support notes, so useful answers are hard to find quickly.
+- Without audit logs, it is difficult to explain why a decision was made or review it later.
+
+How I overcome this problem
+The way to overcome this problem is not to rely on one AI model alone, but to build a full support pipeline that combines retrieval, rules, and reasoning.
+
+- First, the ticket is validated so only clean structured data enters the system.
+- Then the issue is converted into a common text form so it can be compared and analyzed consistently.
+- RAG is used to search internal knowledge and ground the response in real support content.
+- Classification and priority detection turn the free-form issue into an operational decision.
+- Routing sends the ticket to the correct team instead of leaving it to guesswork.
+- Guardrails protect critical cases and make sure risky issues are escalated safely.
+- SLA prediction adds business value by showing how urgent the case is and what response time is expected.
+- Memory and audit logs preserve the result so the system can be reviewed, reused, and improved later.
+
+What I learned from this project in the internship
+This project teaches several important lessons that go beyond just coding.
+
+- I learned how to break a complex AI idea into smaller system layers instead of trying to solve everything with one model call.
+- I learned why retrieval is important in real applications, because LLMs are much more reliable when they are grounded in domain knowledge.
+- I learned that deterministic rules still matter, especially for safety, escalation, and fallback behavior.
+- I learned how important explainability is when a system is used for support or operations.
+- I learned how to design with both user experience and admin visibility in mind.
+- I learned that storing logs and audit trails is not optional in real-world systems; it is part of responsible system design.
+- I learned how to think like a product builder, not only like a model user.
+
+Why this project is actually needed in the real world
+This project is not just a demo idea. It solves a workflow that exists in almost every company with a support desk, internal IT team, or service management process.
+
+- Companies receive too many tickets to manually analyze every one with equal attention.
+- Users expect quick responses, even when the support team is busy.
+- Repeated issues should not require repeated manual analysis.
+- Critical incidents need automatic attention so they do not get buried in the queue.
+- Managers need analytics to understand trends, workload, and problem patterns.
+- Admins need traceable decisions for review, compliance, and governance.
+
+In a real environment, a system like this saves time, improves consistency, and reduces the chance of missing important cases. It also creates a strong foundation for enterprise ITSM automation, where support systems must classify, route, escalate, and audit tickets reliably.
+
+Final takeaway
+The main solution is to combine AI with structured support logic instead of depending only on one or the other. That is what makes the system useful in practice. It is not just answering questions — it is helping a support team work faster, safer, and more consistently.
+
+Short explanation for presentation
+"This project solves the problem of slow and inconsistent support triage. I overcame it by combining validation, RAG, classification, routing, guardrails, SLA prediction, and audit logs into one structured workflow. From this internship, I learned how to build AI systems that are practical, explainable, and useful in the real world."
+

@@ -1,0 +1,15 @@
+File: tools/guadrails.py
+
+Overview:
+This module applies the safety layer for ticket handling. Its job is to recognize high-risk situations such as security incidents, outages, or data loss and then override the normal classification when a ticket needs stronger handling.
+
+The guardrail step exists because some issues are too important to leave to a soft best-fit classification. When the cost of misrouting is high, the system should bias toward safety, escalation, and human review.
+
+to catch dangerous or high risk tickets 
+
+Functions:
+- _keyword_guardrail_fallback(category, priority, assigned_team, ticket_text): Uses deterministic rules to override category, priority, or team when the text clearly suggests a critical situation.
+- _parse_llm_json(raw_text): Extracts JSON from raw model output so the guardrail classifier can still work if the response includes extra text.
+- _build_guardrail_prompt(category, priority, assigned_team, ticket_text): Builds the prompt that asks the model to assess whether a ticket needs escalation or special handling.
+- _normalize_llm_result(result, category, priority, assigned_team): Cleans and bounds the model output so the final decision stays within expected values.
+- apply_guardrails(category, priority, assigned_team, ticket_text): Runs the guardrail decision path, using the LLM when possible and falling back to deterministic rules when needed, then reports whether a guardrail was applied.

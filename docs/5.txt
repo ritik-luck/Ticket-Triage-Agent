@@ -1,0 +1,33 @@
+Who Will Use It?
+
+This project is designed for two different kinds of users, and each one needs a different view of the system. The user who submits the ticket wants a simple, helpful experience that quickly explains what the issue is and what to do next. The admin, on the other hand, needs deeper visibility into how the ticket was interpreted, why a decision was made, and whether the case needs special attention.
+
+User
+The regular user is the person who creates the support request.
+
+- Submits a ticket through a simple React form
+- Sees the category and priority assigned to the issue
+- Receives suggested troubleshooting steps or next actions
+- Gets an SLA expectation so the response timing is clearer
+- Does not see internal RAG details, audit metadata, or backend decision traces
+
+For the user, the main value is speed and clarity. They should not need to understand the internal mechanics of the system. They only need a clean answer that helps them know what is happening and what to expect next.
+
+Admin
+The admin is the support lead, reviewer, or operator who needs full visibility into the ticket flow.
+
+- Views the analytics dashboard to understand ticket trends
+- Opens a ticket by ID to inspect the full details
+- Reviews the RAG score, retrieved sources, and generated guidance
+- Checks guardrail actions to see whether a critical override was applied
+- Reviews SLA prediction and escalation reasoning
+- Uses the audit trail for governance, review, and accountability
+
+For the admin, the project provides more than just the final answer. It provides the reasoning behind the answer. That is important because admins often need to understand whether the ticket was routed correctly, whether an escalation happened for the right reason, and whether the system is behaving consistently.
+
+Why these two roles matter
+Splitting the experience into user and admin views keeps the system practical and secure. The user gets a clean support experience without being overwhelmed by internal details, while the admin gets the deeper data needed to manage the support process. This separation also supports better governance because sensitive operational metadata is only shown where it is needed.
+
+Short explanation for presentation
+"There are two users of the system. The regular user submits the ticket and gets a clean response with category, priority, and next steps. The admin gets the full diagnostic view, including RAG sources, SLA reasoning, guardrail actions, and audit logs for review and governance."
+

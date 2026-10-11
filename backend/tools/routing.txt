@@ -1,0 +1,9 @@
+File: tools/routing.py
+
+Overview:
+This module decides which support team should receive a ticket. It uses the detected category first, then applies text-based heuristics to capture cases where the category alone is not specific enough.
+
+Routing is intentionally separate from classification because a ticket can be categorized correctly but still need a specialized team based on extra clues in the text.
+
+Functions:
+- route_ticket(category, ticket_text): Chooses a support team by combining category-based routing logic with extra keyword heuristics for issue types like service, bugs, performance, and similar operational cases.

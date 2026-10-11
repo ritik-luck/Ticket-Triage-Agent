@@ -1,0 +1,19 @@
+File: main.py
+
+Overview:
+This module creates the FastAPI application that acts as the public entry point for the backend. It is responsible for exposing the HTTP routes that the frontend and admin tools call, wiring those routes to the ticket triage workflow, and enforcing access rules so that sensitive information only goes to the right users.
+
+At a high level, this file does not make triage decisions itself. Instead, it connects the API layer to the rest of the system: the triage engine, chat intake flow, ticket memory, and analytics. That separation keeps the web layer small, predictable, and easy to maintain.
+
+Functions:
+- is_admin_role(role): Interprets the incoming role header and checks whether the caller should be treated as an admin.
+- build_user_response(response): Converts a complete triage response into a safer user-facing version by removing internal-only fields.
+- home(): Returns a simple status message so callers can quickly confirm the service is alive.
+- health_check(): Returns basic service health information for monitoring and uptime checks.
+- triage_ticket(request, x_user_role): Receives ticket data from the client, runs the triage workflow, and then returns either the full admin view or the restricted user view depending on the caller's role.
+- chat_intake(request): Accepts conversational ticket intake messages and forwards them to the chat manager that gathers the missing ticket details.
+- get_all_tickets(x_user_role): Returns the stored ticket history, using full records for admins and filtered records for regular users.
+- get_ticket(ticket_id, x_user_role): Looks up one saved ticket by ID and applies admin access rules before returning the record.
+- clear_ticket_memory(x_user_role): Deletes the stored ticket history by clearing the backing memory file, and only allows admins to do that.
+- get_analytics_dashboard(x_user_role): Returns aggregated analytics for the dashboard, such as category counts, SLA risk, and guardrail activity.
+- get_analytics_tickets(x_user_role): Returns the normalized ticket records used by analytics views, again limited to admins because the data can include sensitive details.

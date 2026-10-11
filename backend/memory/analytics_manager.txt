@@ -1,0 +1,21 @@
+File: memory/analytics_manager.py
+
+Overview:
+This module turns stored ticket logs into dashboard-friendly analytics. It does not change tickets or make decisions; instead, it reads the saved history and computes patterns that help admins understand system behavior over time.
+
+The summaries it builds answer practical questions such as: which categories are most common, how often RAG or web fallback was used, whether guardrails are firing, whether SLA risk is increasing, and which issues are repeating. That makes the ticket history useful beyond a single triage result.
+
+Classes and methods:
+- AnalyticsManager.get_dashboard_summary(): Builds the full analytics payload used by the dashboard, combining distribution counts, retrieval usage, guardrail metrics, SLA status, recent tickets, and repeated issues.
+- AnalyticsManager._count_by_field(tickets, field_name): Counts the values in one ticket field and returns a frequency map.
+- AnalyticsManager._build_rag_web_summary(tickets): Measures how many tickets were answered through internal retrieval versus web fallback.
+- AnalyticsManager._build_guardrail_summary(tickets): Counts guardrail-triggered tickets and highlights likely outage, security, and data-loss patterns.
+- AnalyticsManager.get_latest_guardrail_reason(tickets): Returns the most recent guardrail explanation so admins can inspect what triggered the override.
+- AnalyticsManager._get_guardrail_reason(ticket): Pulls the guardrail reason text out of one saved ticket.
+- AnalyticsManager._build_sla_summary(tickets): Summarizes SLA risk into high, medium, and low buckets.
+- AnalyticsManager._get_audit_text(ticket): Normalizes the audit trail into lowercase plain text so keyword matching is easier.
+- AnalyticsManager._get_recent_tickets(tickets, limit=5): Returns the newest saved tickets first for quick dashboard visibility.
+- AnalyticsManager._find_repeated_issues(tickets): Detects repeated categories so common support patterns are easier to spot.
+
+Instances:
+- analytics_manager: Shared analytics manager used by the admin analytics endpoints.

@@ -1,0 +1,9 @@
+File: utils/__init__.py
+
+Overview:
+This file marks the `utils` directory as a Python package so the backend can import shared helper modules from it.
+
+It does not contain runtime logic itself, but the package marker is still useful because it tells Python that the folder is part of the application structure.
+
+Notes:
+- This file intentionally stays empty and does not define functions or classes.

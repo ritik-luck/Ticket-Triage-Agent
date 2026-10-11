@@ -1,0 +1,78 @@
+Big Picture Before Coding
+
+Before writing any code, the project needed a clear picture of the problem it was trying to solve. This step matters because a support automation system can easily become a collection of disconnected features if the architecture is not defined first. The purpose of this design stage was to turn a vague idea like "use AI for support" into a concrete system with a real operational goal: assist first-level ticket triage in a way that is fast, explainable, safe, and ready to grow into something closer to enterprise ITSM.
+
+The big picture is not just about building an AI model. It is about building a support workflow. That means thinking through how tickets arrive, how they are interpreted, how knowledge is reused, how risky cases are protected, how decisions are traced, and how the result is stored for future use. The project was designed around those questions from the start, which is why the final architecture includes RAG, tools, guardrails, memory, analytics, and SLA prediction instead of only a single LLM call.
+
+Problem
+The original support process has several weaknesses that are easy to overlook if the system is designed too quickly.
+
+- Manual triage delays the first response because a person has to read, interpret, and route every ticket before work can begin.
+- Similar tickets may be routed differently depending on who reads them, which creates inconsistency across the support team.
+- Knowledge is often scattered across documentation, old tickets, and informal support notes, so useful answers are not easy to find quickly.
+- Security, outage, and data-loss issues require faster escalation than ordinary tickets, but manual sorting can miss those signals.
+- Compliance and auditing become difficult if the reasoning behind a decision is not recorded in a structured way.
+
+Those problems show why the system needed more than a basic chatbot. It needed a structured triage agent that could make the support process more predictable and easier to review.
+
+Goal
+The goal of the project was to build an AI-assisted first-level support agent that behaves like a reliable triage layer rather than a free-form assistant.
+
+- Build an AI-assisted first-level support agent that can read a ticket, understand the issue, and decide what should happen next.
+- Classify, prioritize, and retrieve knowledge so that similar tickets are handled in similar ways.
+- Keep every major decision traceable through audit logs and response metadata.
+- Design with production thinking from the beginning so the system is not just a demo, but a foundation for a real support workflow.
+- Prepare the architecture for ITSM integration, which means the project can eventually connect to larger support systems and team processes.
+
+Why the design needed to come first
+If the code had been written before the architecture was clear, the project would likely have ended up with a brittle design. The agent might have solved one ticket type well but failed to scale across other support scenarios. The initial planning phase prevented that by forcing a few important decisions early:
+
+- What should the agent do automatically?
+- What should still be rule-based?
+- What data must be saved for review?
+- What should admins be able to inspect?
+- Where should retrieval be used, and where should deterministic logic stay in control?
+
+Answering those questions before coding made the project cleaner and easier to reason about. It also helped separate concerns properly: the API layer handles request delivery, the agent layer handles orchestration, RAG handles grounding, the tools layer handles decisions, memory handles persistence, and analytics handles review.
+
+How the architecture thinking helped
+This big-picture step influenced the final system in several important ways.
+
+- It encouraged modular design instead of one giant script.
+- It made room for hybrid intelligence, where LLM reasoning and rule-based logic work together.
+- It pushed the system toward explainability, which is important for support teams and admins.
+- It introduced guardrails early, which prevents critical tickets from being treated like ordinary requests.
+- It made SLA prediction part of the core workflow instead of an afterthought.
+- It created a path for later expansion into more enterprise-style support automation.
+
+What "production thinking" means here
+Production thinking means the project was not designed around only "Can the model answer?" It was designed around "Can the system be trusted in a support environment?"
+
+That changes the design in meaningful ways:
+
+- Every request is validated before processing.
+- Every important decision can be traced.
+- Weak retrieval does not get forced into the prompt.
+- Critical issues can override normal routing.
+- Results are stored so the system can improve from history.
+- Admins get analytics so the process can be monitored over time.
+
+That mindset makes the project more realistic, because real support systems care about reliability, reviewability, and consistency as much as raw model output.
+
+Why this matters for the rest of the project
+This slide is the foundation for everything that comes later. Once the big-picture goal was defined, the rest of the components had a reason to exist:
+
+- RAG exists to ground answers in internal knowledge.
+- Classification exists to structure the ticket.
+- Priority detection exists to estimate urgency.
+- Routing exists to send the issue to the correct team.
+- Guardrails exist to protect critical cases.
+- SLA prediction exists to translate the decision into operational urgency.
+- Memory exists to store the result and support repeated issue handling.
+- Analytics exists to help leads and admins understand trends.
+
+In other words, the architecture follows the problem instead of forcing the problem to fit a random AI feature.
+
+Short explanation for presentation
+"Before coding, I defined the support problem clearly. Manual triage is slow, knowledge is scattered, and critical issues need faster escalation. So the goal was to build an AI-assisted first-level support agent with traceable decisions, retrieval grounding, guardrails, SLA prediction, and a structure that can later support enterprise ITSM integration."
+

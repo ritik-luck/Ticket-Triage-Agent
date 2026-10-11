@@ -1,0 +1,68 @@
+RAG Flow Discussion
+
+This RAG flow explains how the project grounds ticket answers in internal knowledge instead of relying only on the language model. The goal is to reduce hallucination, improve answer quality, and make sure the system uses the organization’s own support content before it generates troubleshooting guidance.
+
+The RAG pipeline is one of the most important parts of the project because it connects stored support knowledge with live ticket reasoning. Without it, the model would have to guess from general language patterns, which is much less reliable for support triage.
+
+Main stages in the RAG flow
+- CSV dataset
+- Document loader
+- Chunking
+- Embeddings
+- ChromaDB vector store
+- Retriever
+- Prompt context
+- Groq LLM
+- Suggested steps
+
+Detailed flow explanation
+
+1. CSV dataset
+The flow starts with the knowledge base stored as CSV files. These files contain the support material the system can learn from, such as past issue descriptions, answers, or internal documentation. This is the raw source of truth for the RAG system.
+
+2. Document loader
+The document loader scans the CSV files and converts them into a consistent document format. It identifies useful columns, combines the important text fields, and prepares each row as a normalized document record. This step matters because the rest of the pipeline needs clean, readable text rather than raw spreadsheet structure.
+
+3. Chunking
+Once the documents are loaded, they are split into smaller overlapping chunks. Chunking is necessary because long documents are harder to search effectively. Smaller pieces allow the retriever to find the exact part of the knowledge base that matches the ticket, while overlap helps preserve context when a meaningful sentence crosses a chunk boundary.
+
+4. Embeddings
+Each chunk is turned into a vector embedding. This converts text into a numerical representation that captures semantic meaning. The system uses embeddings so it can compare similarity by meaning rather than by exact word match. That is especially useful in support tickets, where users often describe the same issue in different ways.
+
+5. ChromaDB vector store
+The chunk embeddings are stored in ChromaDB. This vector store acts like the searchable memory of the RAG system. It keeps the embedded chunks persistent, so the project can query them later without rebuilding everything from scratch on every request.
+
+6. Retriever
+When a new ticket arrives, the retriever converts the ticket text into an embedding and searches the vector store for the closest matching chunks. It returns the top results along with similarity scores and source metadata. This is the retrieval step that decides what knowledge is relevant for the current issue.
+
+7. Prompt context
+The retrieved chunks are then formatted into a prompt context block. This context is added to the LLM input so the model can answer using the right internal knowledge. The prompt is designed to encourage grounded reasoning instead of free-form guessing.
+
+8. Groq LLM
+The Groq model receives the ticket text plus the retrieved context and generates an internal answer. This answer is not just a generic response — it is meant to be based on the knowledge base content that the retriever found. If the retrieved match is weak, the system can fall back to a safer general answer path instead of using low-quality context.
+
+9. Suggested steps
+The final output from the RAG pipeline is converted into suggested steps. These steps are easier for the end user or support agent to read and act on. In other words, the RAG layer does not just produce text; it produces practical troubleshooting guidance.
+
+Why each step exists
+- The CSV dataset provides the knowledge source.
+- The document loader standardizes that source into usable documents.
+- Chunking improves retrieval precision.
+- Embeddings capture meaning instead of just keywords.
+- ChromaDB stores the embedded chunks efficiently for repeated queries.
+- The retriever finds the most relevant knowledge for the live ticket.
+- Prompt context gives the LLM grounded information to reason over.
+- Groq turns the grounded context into a natural-language answer.
+- Suggested steps turn that answer into action-oriented support guidance.
+
+Why RAG matters in this project
+RAG is what makes the agent trustworthy. Support tickets are often ambiguous, and the same issue can be phrased in many different ways. By retrieving real internal knowledge before generating an answer, the system reduces hallucination and improves consistency.
+
+It also makes the project more explainable. Instead of producing an answer with no traceable source, the system can point to the chunks that influenced the result. That is valuable for both support agents and administrators who need to audit decisions later.
+
+How the flow fits into the larger system
+The RAG layer sits between ticket intake and final decision-making. It does not replace classification, routing, guardrails, or SLA prediction. Instead, it provides the context those modules use to make better decisions. In that sense, RAG is the knowledge grounding layer for the whole project.
+
+Short explanation for presentation
+"The RAG flow starts with CSV support data, loads and chunks the documents, creates embeddings, stores them in ChromaDB, retrieves the most relevant chunks for a new ticket, builds prompt context, sends that context to Groq, and returns suggested troubleshooting steps grounded in real knowledge."
+

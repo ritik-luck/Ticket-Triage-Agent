@@ -1,0 +1,63 @@
+Data Flow Diagram Discussion
+
+This data flow diagram explains how information moves through the AI Ticket Triage Agent. Unlike the workflow view, which focuses on the order of steps, the DFD emphasizes what data is entering the system, how it is transformed, what decisions are made from it, and where the final output goes. That makes it a useful view for understanding the system at a data architecture level.
+
+The diagram is split into two major parts:
+- Inputs & Processing
+- Decisions & Output
+
+Those two halves show the full lifecycle of a support ticket: data arrives, the backend processes it through retrieval and reasoning, the decision tools interpret it, and the final result is stored and surfaced for review.
+
+1. Inputs & Processing
+
+1.1 User submits ticket via React
+The data flow begins in the frontend. The user enters support information such as name, email, subject, and description. React packages this into a request payload and sends it to the backend. At this stage the data is still raw human input, so it may contain missing details, casual wording, or mixed levels of urgency.
+
+1.2 FastAPI validates the request
+When the payload reaches the backend, FastAPI checks that the request matches the expected schema. This step protects the system from malformed data and ensures that later modules receive a predictable structure. Validation is important because the rest of the pipeline assumes that required fields are present and readable.
+
+1.3 Agent builds issue text and checks cache
+After validation, the agent converts the request into a normalized issue text. This compact text form is easier to compare with prior tickets and easier to pass into retrieval or classification components. The agent then checks memory to see whether the current issue is similar to a previously handled ticket. If there is a match, the system can reuse prior knowledge and avoid repeating work.
+
+1.4 RAG retrieves internal knowledge from ChromaDB
+If the cache does not produce a confident answer, the agent moves to retrieval-augmented generation. The query is converted into an embedding and compared with stored knowledge-base chunks in ChromaDB. This is where data moves from plain text into vector form and back into semantically relevant context. The retrieved chunks represent the most likely internal documentation or troubleshooting references related to the ticket.
+
+1.5 Groq LLM generates internal or fallback answer
+Once the relevant context is collected, the Groq LLM generates an answer. If the retrieved knowledge is strong, the model produces an internal grounded response based on that context. If the retrieval is weak, the system can use a fallback path to generate broader guidance instead of relying on uncertain knowledge. This step converts raw retrieval data into useful natural-language troubleshooting output.
+
+2. Decisions & Output
+
+2.1 Decision tools classify → priority → route
+After the answer is generated, the agent passes the ticket through the structured decision tools. First, classification determines the issue type. Then priority detection estimates urgency. Finally, routing assigns the most appropriate support team. This chain matters because each decision depends on the data created by the previous one. Category influences priority, and both of them influence routing.
+
+2.2 Guardrail layer overrides critical cases
+The guardrail layer acts as the safety checkpoint. It scans the ticket text and the intermediate decisions for signs of critical risk such as outages, security incidents, or data loss. If a serious issue is detected, the system can override the normal classification, priority, or team assignment. This ensures that dangerous or business-critical tickets are escalated instead of being treated like routine requests.
+
+2.3 SLA engine predicts risk and escalation team
+Once the ticket has a final category, priority, and assigned team, the SLA engine estimates resolution time, response time, and breach risk. It also decides whether escalation is required and which team should receive it. In data flow terms, the SLA engine transforms decision data into operational planning data. That makes the ticket useful not only for immediate handling but also for workload management.
+
+2.4 Memory saves the complete audit log
+The final output is written to memory as a complete ticket log. This record includes the original request, the generated reasoning, the classification result, priority, routing, guardrail action, SLA details, and audit trail. Saving this data is important because it allows the system to support later lookup, repeated issue detection, troubleshooting review, and analytics.
+
+2.5 Admin dashboard reads the data for analytics and review
+Once tickets are stored, the analytics layer can read them and produce summaries for the admin dashboard. The dashboard uses this data to show trends such as category frequency, response behavior, guardrail triggers, SLA risk, and repeated issues. This means the same ticket data supports both immediate triage and longer-term service improvement.
+
+How the data transforms across the system
+- Raw input becomes validated request data.
+- Validated request data becomes normalized issue text.
+- Issue text becomes cache search data and embedding query data.
+- Embedding query data becomes retrieved knowledge chunks.
+- Retrieved knowledge becomes grounded natural-language guidance.
+- Guidance plus ticket context becomes classification and routing data.
+- Classification and routing data become SLA and guardrail decision data.
+- Final decision data becomes a saved audit record.
+- Saved records become analytics and dashboard data.
+
+Why this DFD matters
+This diagram is useful because it shows that the project is not just a single model call. It is a full data pipeline. Each module changes the form of the data in a specific way so the next module can make a better decision. That design improves reliability, makes the system easier to audit, and gives the admin team visibility into how tickets are handled.
+
+In other words, the DFD shows that the system turns unstructured support text into structured operational intelligence.
+
+Short explanation for presentation
+"The data flow starts with a ticket submitted from React. FastAPI validates it, the agent normalizes it, the cache and RAG layers search for useful context, the Groq model generates guidance, the decision tools classify and route the ticket, guardrails handle risky cases, the SLA engine predicts urgency, the result is saved in memory, and the admin dashboard uses the stored data for analytics."
+

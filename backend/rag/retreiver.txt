@@ -1,0 +1,14 @@
+File: rag/retreiver.py
+
+Overview:
+This module performs semantic search over the ChromaDB vector collection. It takes a ticket query, turns it into an embedding, searches for the closest knowledge-base chunks, and then converts raw vector distances into a more readable similarity score.
+
+The reason this module exists is to bridge retrieval and reasoning. The rest of the system needs a simple answer to one question: what internal knowledge is most relevant to this ticket?
+
+Classes and methods:
+- Retriever.__init__(top_k=3): Sets how many nearby matches should be returned for one query.
+- Retriever.retrieve(query): Validates the query, generates an embedding, searches the collection, converts the raw distances into scores, and returns the best-matching chunks plus the top score.
+- Retriever._convert_distance_to_score(distance): Converts a distance value into a normalized similarity score that is easier for the rest of the pipeline to interpret.
+
+Instances:
+- retriever: Shared retriever used by the augmentation manager.

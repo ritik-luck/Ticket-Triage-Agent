@@ -1,0 +1,14 @@
+File: rag/embeddings.py
+
+Overview:
+This module loads the sentence-transformers model used by the retrieval system and provides a small wrapper for generating embeddings. The rest of the code depends on this module to convert text into vectors, which is what lets semantic search compare meaning instead of just matching exact words.
+
+By keeping the model handling here, the retriever and vector-store code stay cleaner and do not need to worry about initialization details or model loading behavior.
+
+Classes and methods:
+- EmbeddingManager.__init__(model_name): Stores the model name and prepares the embedding model for use.
+- EmbeddingManager._load_model(): Loads the SentenceTransformer model and reports the status so startup issues are easier to diagnose.
+- EmbeddingManager.generate_embeddings(texts): Encodes a list of texts into numeric vectors that downstream retrieval can compare.
+
+Instances:
+- embedding_manager: Shared embedding manager used by the retriever and vector store.
